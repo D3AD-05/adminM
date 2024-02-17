@@ -1,0 +1,30 @@
+// reducers.js
+import { USER_DETAILS } from "./index";
+
+const initialState = {
+  userId: "",
+  userName: "",
+  userType: "",
+  userStatus: "",
+  userPhoneNo: "",
+};
+
+const userDataReducer = (state = initialState, action) => {
+    console.log(action);
+    
+  switch (action.type) {
+    case USER_DETAILS:
+      return {
+        ...state,
+        userId: action.payload.userId,
+        userName: action.payload.userName,
+        userType: action.payload.userType,
+        userStatus: action.payload.userStatus,
+        userPhoneNo: action.payload.userPhoneNo,
+      };
+    default:
+      return state;
+  }
+};
+
+export default userDataReducer;

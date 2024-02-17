@@ -1,0 +1,51 @@
+@import "../../../style/variables.scss";
+
+// .home {
+//   height: calc(100vh - 70px);
+//   display: grid;
+//   gap: 20px;
+//   grid-template-columns: repeat(4, 1fr);
+//   .box {
+//     padding: 20px;
+//     border-radius: 10px;
+//     border: 1px solid $soft-color;
+//     //  background-color: rgba(3, 85, 110, 0.411);
+//   }
+//   .box4 {
+//     grid-column: span 1;
+//     grid-row: span 3;
+//   }
+//   .box8 {
+//     grid-column: span 3;
+//     grid-row: span;
+//   }
+//   .box9 {
+//     grid-column: span 4;
+//     grid-row: span 4;
+//   }
+// }
+
+.home {
+  height: calc(100vh - 70px);
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(6, 1fr);
+  .box {
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid $soft-color;
+    //  background-color: rgba(3, 85, 110, 0.411);
+  }
+  //   .box4 {
+  //     grid-column: span 1;
+  //     grid-row: span 3;
+  //   }
+  .box6 {
+    grid-column: span 1;
+    grid-row: span 3;
+  }
+  .box12 {
+    grid-column: span 5;
+    grid-row: span 4;
+  }
+}
