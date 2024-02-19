@@ -6,8 +6,8 @@ import { z } from "zod";
 import "./phoneAuth.scss";
 import axios from "axios";
 import { Toaster, toast } from "react-hot-toast";
-import { setUserDetails } from "../../userRedux";
 import { useDispatch } from "react-redux";
+import { setUserDetails } from "../../redux/action/userAction";
 // const api = "http://www.gramboodev.com:25060/";
 const api = "http://localhost:25060/";
 const PhoneAuth = (props) => {
@@ -48,15 +48,14 @@ const PhoneAuth = (props) => {
       response = await axios.post(api + "users/checkPhoneNumber", data);
       verifiedData = response.data;
       console.log(response.data[0]);
-      dispatch(
-        setUserDetails({
-          userId: response.data[0].User_Id,
-          userName: response.data[0].User_Name,
-          userType: response.data[0].User_Typw,
-          userStatus: response.data[0].User_Status,
-          userPhoneNo: response.data[0].User_PhoneNo,
-        })
-      );
+      const userData = {
+        userId: response.data[0].User_Id,
+        userName: response.data[0].User_Name,
+        userType: response.data[0].User_Type,
+        userStatus: response.data[0].User_Status,
+        userPhoneNo: response.data[0].User_PhoneNo,
+      };
+      dispatch(setUserDetails(userData));
       // verifiedData.length > 0
       //   ? ()
       //   : null;

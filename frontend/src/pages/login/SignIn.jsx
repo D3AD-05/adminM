@@ -84,7 +84,7 @@ const SignIn = () => {
     } else {
       setFormErrors((prevErrors) => ({
         ...prevErrors,
-        [fieldName]: "", // Clear the error message if validation passes
+        [fieldName]: "",
       }));
     }
   };

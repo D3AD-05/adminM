@@ -1,5 +1,5 @@
 @import "../../style/variables.scss";
-// @import "../../styles/responsive.scss";
+@import "../../style/responsive.scss";
 
 .menu {
   .item {
@@ -13,11 +13,10 @@
       font-weight: 200;
       color: $soft-color;
       text-transform: uppercase;
-     
 
-    //   @include lg{
-    //     display: none;
-    //   }
+      @include lg{
+        display: none;
+      }
     }
 
     .listItem {
@@ -31,12 +30,12 @@
         background-color: $soft-bg;
       }
 
-    //   .listItemTitle{
-    //     @include lg{
-    //       display: none;
-    //     }
-    //   }
-    
+      .listItemTitle{
+        @include lg{
+          display: none;
+        }
+      }
     }
   }
 }
+

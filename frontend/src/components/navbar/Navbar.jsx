@@ -1,16 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import "./navbar.scss";
 import { useNavigate } from "react-router-dom";
-import { userDataReducer } from "../../userRedux";
 import { useSelector } from "react-redux";
+import { Box, Button, Menu, MenuItem, Modal, Stack } from "@mui/material";
+
 function NavBar() {
-  const userData = useSelector((state) => state.userDataReducer);
-  console.log(userData);
   const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const userData = useSelector((state) => state.user.userData);
+
   const handleOnNotification = () => {
     navigate("/notifications");
   };
-  console.log(userDataReducer);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   return (
     <div className="navbar">
       <div className="logo">
@@ -29,11 +38,25 @@ function NavBar() {
           <img
             src="https://cdn.vectorstock.com/i/1000x1000/30/97/flat-business-man-user-profile-avatar-icon-vector-4333097.webp"
             alt=""
+            onClick={handleClick}
           />
-          <span>Dias</span>
+          <span>{userData ? userData.userName : "user"}</span>
         </div>
         <img src="/settings.svg" alt="" className="icon" />
       </div>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          "aria-labelledby": "basic-button",
+        }}
+      >
+        <MenuItem onClick={handleClose}>Profile</MenuItem>
+        <MenuItem onClick={handleClose}>My account</MenuItem>
+        <MenuItem onClick={handleClose}>Logout</MenuItem>
+      </Menu>
     </div>
   );
 }
