@@ -12,6 +12,9 @@ import app from "../../firebase";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { API_URL } from "../../utlity/appConstants";
 function Users() {
   /*         ----       states         -----         */
   const [usId, setId] = useState(0);
@@ -29,8 +32,7 @@ function Users() {
     userStatus: "",
     userImage: "",
   });
-  const api = "http://www.gramboodev.com:25060/";
-  // const api = "http://localhost:25060/";
+
   // --------------,
   const style = {
     display: "flex",
@@ -52,7 +54,7 @@ function Users() {
   //  --> getallusers
   const fetchData = () => {
     axios
-      .get(api + "users/getAllUsers")
+      .get(API_URL + "users/getAllUsers")
       .then((response) => {
         const updatedFormDataArray = response.data
           ? response.data.map((el, key) => ({
@@ -168,14 +170,13 @@ function Users() {
         sort: false,
         customBodyRender: (id, data) => {
           return (
-            <button
-              className="editButton"
+            <EditIcon
+              // className="editButton"
+              color="primary"
               onClick={() => {
                 onEdit(id, data);
               }}
-            >
-              ✎
-            </button>
+            ></EditIcon>
           );
         },
       },
@@ -188,12 +189,9 @@ function Users() {
         sort: false,
         customBodyRender: (id) => {
           return (
-            <button
-              className="delete-btn formButtonCancel"
-              onClick={() => handleOnDelete(id)}
-            >
+            <DeleteForeverIcon color="error" onClick={() => handleOnDelete(id)}>
               🗑️
-            </button>
+            </DeleteForeverIcon>
           );
         },
       },
@@ -236,7 +234,7 @@ function Users() {
       formData.userStatus = 2;
 
       axios
-        .post(api + "users/createUser", formData)
+        .post(API_URL + "users/createUser", formData)
         .then((res) => {
           if (res) {
             setDataLoad(!dataLoad);
@@ -247,7 +245,7 @@ function Users() {
     } else {
       formData.userStatus = userStatus;
       axios
-        .put(api + `users/updateUser/${usId}`, formData)
+        .put(API_URL + `users/updateUser/${usId}`, formData)
         .then((res) => {
           if (res) {
             setDataLoad(!dataLoad);
@@ -290,7 +288,7 @@ function Users() {
     if (name === "userType") {
       setSelectedUser(e.target.value);
     } else if (name === "userStatus") {
-      setUserStatus(2);
+      setUserStatus(e.target.value);
     }
   };
 
@@ -398,8 +396,8 @@ function Users() {
                     border: "1px solid gray",
                   }}
                 >
-                  <option value="2">Active</option>
-                  <option value="3">Blocked</option>
+                  <option value={2}>Active</option>
+                  <option value={3}>Blocked</option>
                 </select>
               </div>
             )}

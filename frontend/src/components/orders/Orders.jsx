@@ -9,43 +9,18 @@ import Chip from "@mui/material/Chip";
 import DoneIcon from "@mui/icons-material/Done";
 import BlockIcon from "@mui/icons-material/Block";
 import CloseIcon from "@mui/icons-material/Close";
+import { API_URL } from "../../utlity/appConstants";
+
+/*-----------========================-------------------------*/
+
 function Orders() {
+  /* --------------- states --------------------------------- */
+
   const [orderDetails, setOrderDetails] = useState();
   const [popup, setPopup] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState();
 
-  /*          -------------------------             */
-  console.log("-------", orderDetails);
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  //  --> get all orders
-  const fetchData = () => {
-    axios
-      .get("http://localhost:25060/orders/getAllOrders")
-      .then((response) => {
-        console.log(response.data);
-        const updatedFormDataArray = response.data
-          ? response.data.map(
-              (el, key) => (
-                console.log(el),
-                {
-                  slNo: key + 1,
-                  customerId: el.customerId,
-                  orderStatus: el.orderStatus,
-                  orderId: el.orderNo,
-                  deliveryDate: el.orderDate,
-                  totalItems: el.totalItems,
-                }
-              )
-            )
-          : [];
-        setOrderDetails(updatedFormDataArray);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-  };
-
+  /*-------------------- const --------------------------------*/
   const columns = [
     {
       name: "slNo",
@@ -163,6 +138,40 @@ function Orders() {
       },
     },
   ];
+
+  /*          ------------ useEffects -------------             */
+  console.log("-------", orderDetails);
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  //--------  functions -------------->
+  //       > get all orders >
+  const fetchData = () => {
+    axios
+      .get(API_URL + "orders/getAllOrders")
+      .then((response) => {
+        console.log(response.data);
+        const updatedFormDataArray = response.data
+          ? response.data.map(
+              (el, key) => (
+                console.log(el),
+                {
+                  slNo: key + 1,
+                  customerId: el.customerId,
+                  orderStatus: el.orderStatus,
+                  orderId: el.orderNo,
+                  deliveryDate: el.orderDate,
+                  totalItems: el.totalItems,
+                }
+              )
+            )
+          : [];
+        setOrderDetails(updatedFormDataArray);
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  };
+
   const onApprovalClick = (id, tableMeta) => {
     console.log(id, tableMeta);
     setPopup(true);
@@ -210,7 +219,7 @@ function Orders() {
       .catch((err) => alert(err));
   };
 
-  /****************************************************** */
+  /******************* UI *********************************** */
   return (
     <div className="orderContainer">
       <div className="dataTable">
@@ -269,8 +278,8 @@ function Orders() {
 /******************************************************************* */
 const style = {
   display: "flex",
-  justifyContent: "center", // Horizontally center content
-  alignItems: "center", // Vertically center content
+  justifyContent: "center",
+  alignItems: "center",
   position: "fixed",
   top: "50%",
   left: "50%",

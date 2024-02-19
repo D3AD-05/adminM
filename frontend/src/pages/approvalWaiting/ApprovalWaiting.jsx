@@ -1,7 +1,8 @@
 import axios from "axios";
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-const api = "http://www.gramboodev.com:25060/";
+import { API_URL } from "../../utlity/appConstants";
+// const api = "http://www.gramboodev.com:25060/";
 function ApprovalWaiting() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -9,7 +10,7 @@ function ApprovalWaiting() {
   const userId = location.state?.userId;
   console.log(location);
   const handleOnrefresh = () => {
-    axios.get(api + `users/checkForApproval/${userId}`).then((response) => {
+    axios.post(API_URL + `items/createItem`).then((response) => {
       console.log(response.data.userStatus);
       if (response.data.userStatus === 1) {
         alert("pleas contact admin");

@@ -5,7 +5,6 @@ const UserController = {
   /*  -------------------  getAllUsers ----------------------------- */
 
   getAllUsers: (req, res) => {
-    console.log("in user get");
     const sql = "SELECT * FROM userDetails";
     pool.query(sql, (err, data) => {
       if (err) {
@@ -48,7 +47,7 @@ const UserController = {
   /*  -------------------  updateUser ----------------------------- */
   updateUser: (req, res) => {
     const { userId } = req.params;
-
+    console.log(req.body);
     const {
       userName,
       userPhoneNo,

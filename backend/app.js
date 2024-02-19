@@ -3,7 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const userRoutes = require("./routes/userRoutes");
 const orderRoutes = require("./routes/orderRoutes");
-
+const itemRoutes = require("./routes/itemRouter");
 const app = express();
 const PORT = process.env.PORT || 25060;
 
@@ -12,6 +12,7 @@ app.use(express.json());
 
 app.use("/users", userRoutes);
 app.use("/orders", orderRoutes);
+app.use("/items", itemRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
