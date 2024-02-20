@@ -32,6 +32,7 @@ function Orders() {
   const [orderList, setOrderList] = useState([]);
   const [dataLoad, setDataLoad] = useState(false);
   const [imgPopup, setImgPopup] = useState(false);
+  const [img, setImg] = useState(false);
   /*-------------------- const --------------------------------*/
   const columns = [
     {
@@ -78,10 +79,26 @@ function Orders() {
         sort: true,
       },
     },
+    {
+      name: "contactPerson",
+      label: "contact Person",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
 
     {
       name: "totalItems",
       label: "total Items",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+    {
+      name: "aproximateWt",
+      label: "aproximate Wt",
       options: {
         filter: true,
         sort: true,
@@ -98,8 +115,8 @@ function Orders() {
             return null;
           }
           const statusMap = {
-            1: { label: "Pending", color: "secondary" },
-            2: { label: "Approved", color: "primary" },
+            1: { label: "Pending", color: "primary" },
+            2: { label: "Approved", color: "success" },
             3: { label: "Rejected", color: "error" },
           };
           const status = statusMap[value];
@@ -117,7 +134,7 @@ function Orders() {
       },
     },
     {
-      name: "userImage",
+      name: "customerimg",
       label: "Image",
       align: "center",
       options: {
@@ -126,7 +143,7 @@ function Orders() {
         sort: true,
         customBodyRender: (value) => {
           return (
-            <div className="user" onClick={togglePopup}>
+            <div className="user" onClick={() => togglePopup(value)}>
               {console.log(value)}
               <img
                 src={
@@ -202,65 +219,11 @@ function Orders() {
     customToolbar: () => {},
   };
 
-  const togglePopup = () => {
+  const togglePopup = (value) => {
     setImgPopup(!imgPopup);
+    setImg(value);
   };
-  // const paymentModeColumns = [
-  //   {
-  //     name: "#",
-  //     style: {
-  //       maxWidth: "20%",
-  //       textAlign: "left",
-  //     },
-  //   },
-  //   {
-  //     name: "freightType.formLabels.freightType",
-  //     style: {
-  //       minWidth: "40%",
-  //       textAlign: "left",
-  //     },
-  //     sort: true,
-  //   },
-  //   {
-  //     name: "freightType.formLabels.status",
-  //     style: {
-  //       textAlign: "left",
-  //     },
-  //     sort: true,
-  //     filter: ["Active", "Blocked"],
-  //   },
-  //   {
-  //     name: "freightType.gridLabels.Edit",
-  //     style: {
-  //       textAlign: "left",
-  //     },
-  //     sort: false,
-  //   },
-  // ];
 
-  // const renderTableData = () => {
-  //   let dataTableOBJ = [];
-  //   orderDetails &&
-  //     orderDetails.map((value, i) => {
-  //       dataTableOBJ.push([
-  //         i + 1,
-  //         value.customerName,
-  //         value.Status == 1 ? (
-  //           <Tooltip title="Active">
-  //             <Done color="success" />
-  //           </Tooltip>
-  //         ) : (
-  //           <Tooltip title="Blocked">
-  //             <Close color="error" />
-  //           </Tooltip>
-  //         ),
-  //         <Tooltip title="Edit">
-  //           {/* <Edit color="success" onClick={() => editTableRow(value)} /> */}
-  //         </Tooltip>,
-  //       ]);
-  //     });
-  //   return dataTableOBJ;
-  // };
   /*          ------------ useEffects -------------             */
   console.log("-------", orderDetails);
   useEffect(() => {
@@ -282,13 +245,16 @@ function Orders() {
                 {
                   slNo: key + 1,
                   orderId: el.order_id,
-                  orderStatus: el.status,
+                  // orderStatus: el.status,
                   salesman: el.salesman_id,
                   customerName: el.customer_Id,
                   totalItems: el.order_totalItems,
                   orderDate: el.formatted_order_date,
                   deliveryDate: el.order_deliveryDate,
                   orderStatus: el.status,
+                  contactPerson: el.customer_contactPerson,
+                  aproximateWt: el.order_totalApxWt,
+                  customerimg: el.customer_img,
                 }
               )
             )
@@ -462,10 +428,14 @@ function Orders() {
       </Modal>
 
       {imgPopup && (
-        <div className="popup-container" onClick={togglePopup}>
+        <div className="popup-container" onClick={() => togglePopup()}>
           <div className="popup-content">
             <img
-              src="https://cdn.vectorstock.com/i/1000x1000/30/97/flat-business-man-user-profile-avatar-icon-vector-4333097.webp"
+              src={
+                img
+                  ? img
+                  : "https://cdn.vectorstock.com/i/1000x1000/30/97/flat-business-man-user-profile-avatar-icon-vector-4333097.webp"
+              }
               alt="Popup Image"
             />
           </div>
@@ -517,3 +487,60 @@ const style2 = {
   p: 4,
 };
 export default Orders;
+
+// const paymentModeColumns = [
+//   {
+//     name: "#",
+//     style: {
+//       maxWidth: "20%",
+//       textAlign: "left",
+//     },
+//   },
+//   {
+//     name: "freightType.formLabels.freightType",
+//     style: {
+//       minWidth: "40%",
+//       textAlign: "left",
+//     },
+//     sort: true,
+//   },
+//   {
+//     name: "freightType.formLabels.status",
+//     style: {
+//       textAlign: "left",
+//     },
+//     sort: true,
+//     filter: ["Active", "Blocked"],
+//   },
+//   {
+//     name: "freightType.gridLabels.Edit",
+//     style: {
+//       textAlign: "left",
+//     },
+//     sort: false,
+//   },
+// ];
+
+// const renderTableData = () => {
+//   let dataTableOBJ = [];
+//   orderDetails &&
+//     orderDetails.map((value, i) => {
+//       dataTableOBJ.push([
+//         i + 1,
+//         value.customerName,
+//         value.Status == 1 ? (
+//           <Tooltip title="Active">
+//             <Done color="success" />
+//           </Tooltip>
+//         ) : (
+//           <Tooltip title="Blocked">
+//             <Close color="error" />
+//           </Tooltip>
+//         ),
+//         <Tooltip title="Edit">
+//           {/* <Edit color="success" onClick={() => editTableRow(value)} /> */}
+//         </Tooltip>,
+//       ]);
+//     });
+//   return dataTableOBJ;
+// };

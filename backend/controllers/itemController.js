@@ -105,6 +105,7 @@ const itemController = {
   },
 
   getAllItems: (req, res) => {
+    console.log("______");
     try {
       const sql = "SELECT * FROM itemMaster";
       pool.query(sql, (err, data) => {
@@ -112,6 +113,7 @@ const itemController = {
           console.error("Error retrieving data:", err);
           return res.status(500).json({ error: "Internal Server Error" });
         }
+        console.log(data);
         return res.status(200).json(data);
       });
     } catch (error) {
