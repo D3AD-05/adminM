@@ -578,5 +578,27 @@ const orderController = {
       throw error;
     }
   },
+
+  getAllOrders: (req, res) => {
+    console.log("get all orders");
+    const sql = `
+        SELECT 
+            om.*,
+            DATE_FORMAT(om.order_date, '%Y-%m-%d') AS formatted_order_date,
+            c.*
+        FROM 
+            order_Master om
+        LEFT JOIN 
+            customers c ON c.deviceName = om.deviceName 
+        WHERE 
+            om.status < 4`;
+    pool.query(sql, (err, data) => {
+      if (err) {
+        console.error("Error retrieving data:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+      return res.status(200).json(data);
+    });
+  },
 };
 module.exports = orderController;
