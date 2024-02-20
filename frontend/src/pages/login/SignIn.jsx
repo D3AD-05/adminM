@@ -6,11 +6,9 @@ import "@fortawesome/fontawesome-free/css/all.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../utlity/authProvider";
+import { API_URL } from "../../utlity/appConstants";
 
 const SignIn = () => {
-  // const api = "http://www.gramboodev.com:25060/";
-  const api = "http://localhost:25060/";
-
   const navigate = useNavigate();
   const [isSignUpMode, setIsSignUpMode] = useState(false);
   const [verifiedData, setVerifiedData] = useState({});
@@ -95,7 +93,7 @@ const SignIn = () => {
 
     if (validationResult.success) {
       axios
-        .post(api + "users/createUser", formData)
+        .post(API_URL + "users/createUser", formData)
         .then((res) => {
           if (res.status === 200) {
             const userId = res.data.insertId;

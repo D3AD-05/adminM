@@ -95,6 +95,31 @@ function Users() {
     },
 
     {
+      name: "userImage",
+      label: "Image",
+      align: "center",
+      options: {
+        align: "center",
+        filter: true,
+        sort: true,
+        customBodyRender: (value) => {
+          return (
+            <div className="user">
+              {console.log(value)}
+              <img
+                src={
+                  value
+                    ? value
+                    : "https://cdn.vectorstock.com/i/1000x1000/30/97/flat-business-man-user-profile-avatar-icon-vector-4333097.webp"
+                }
+              ></img>
+            </div>
+          );
+        },
+      },
+    },
+
+    {
       name: "userName",
       label: "Name",
       align: "center",
@@ -284,6 +309,7 @@ function Users() {
 
   const onChange = (e) => {
     const name = e.target.name;
+    console.log(name, e.target.value);
     setFormData({ ...formData, [e.target.name]: e.target.value });
     if (name === "userType") {
       setSelectedUser(e.target.value);
@@ -369,12 +395,13 @@ function Users() {
               </select>
             </div>
 
-            {userStatus == "1" ? (
+            {userStatus == 1 ? (
               <Button
                 variant="contained"
                 color="success"
                 className="formButton"
                 name="userStatus"
+                value={2}
                 onClick={onChange}
               >
                 Approve

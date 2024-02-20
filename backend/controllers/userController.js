@@ -5,7 +5,7 @@ const UserController = {
   /*  -------------------  getAllUsers ----------------------------- */
 
   getAllUsers: (req, res) => {
-    const sql = "SELECT * FROM userDetails";
+    const sql = "SELECT * FROM userDetails ORDER BY User_Id DESC";
     pool.query(sql, (err, data) => {
       if (err) {
         console.error("Error retrieving data:", err);

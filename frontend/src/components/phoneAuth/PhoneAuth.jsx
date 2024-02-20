@@ -8,8 +8,8 @@ import axios from "axios";
 import { Toaster, toast } from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { setUserDetails } from "../../redux/action/userAction";
-// const api = "http://www.gramboodev.com:25060/";
-const api = "http://localhost:25060/";
+import { API_URL } from "../../utlity/appConstants";
+
 const PhoneAuth = (props) => {
   const dispatch = useDispatch();
   const { data, sendDataToParent, isSignUpMode } = props;
@@ -45,7 +45,7 @@ const PhoneAuth = (props) => {
       var verifiedData = null;
 
       // if (!isSignUpMode) {
-      response = await axios.post(api + "users/checkPhoneNumber", data);
+      response = await axios.post(API_URL + "users/checkPhoneNumber", data);
       verifiedData = response.data;
       console.log(response.data[0]);
       const userData = {

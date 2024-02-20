@@ -3,7 +3,9 @@ const router = express.Router();
 const orderController = require("../controllers/orderController");
 
 // router.post("/", userController.createUser);
+router.get("/getAllOrders", orderController.getAllOrders);
 router.get("/getOrderDetails", orderController.getOrderDetails);
 router.post("/syncOrderData", orderController.syncOrderData);
+router.put("/updateOrderMaster/:orderId", orderController.updateOrderMaster);
 
 module.exports = router;

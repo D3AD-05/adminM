@@ -10,6 +10,14 @@ import DoneIcon from "@mui/icons-material/Done";
 import BlockIcon from "@mui/icons-material/Block";
 import CloseIcon from "@mui/icons-material/Close";
 import { API_URL } from "../../utlity/appConstants";
+import Datatable from "../datatable/datatable";
+import { TextField, Tooltip } from "@mui/material";
+import Done from "@mui/icons-material/Done";
+import Close from "@mui/icons-material/Close";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { Typography } from "@mui/material";
+import "./orders.scss";
 
 /*-----------========================-------------------------*/
 
@@ -18,22 +26,25 @@ function Orders() {
 
   const [orderDetails, setOrderDetails] = useState();
   const [popup, setPopup] = useState(false);
+  const [toggle, setToggle] = useState(false);
+  const [warrning, setWarnning] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState();
-
+  const [orderList, setOrderList] = useState([]);
+  const [dataLoad, setDataLoad] = useState(false);
+  const [imgPopup, setImgPopup] = useState(false);
   /*-------------------- const --------------------------------*/
   const columns = [
     {
       name: "slNo",
       label: "SL . No",
       options: {
-        align: "center",
         filter: false,
         sort: false,
       },
     },
 
     {
-      name: "orderNo",
+      name: "orderId",
       label: "Order Number",
       align: "center",
       options: {
@@ -43,17 +54,16 @@ function Orders() {
       },
     },
     {
-      name: "customerId",
-      label: "customerId ",
+      name: "customerName",
+      label: "customer Name",
       options: {
         filter: true,
         sort: true,
       },
     },
-
     {
       name: "orderDate",
-      label: "orderDate",
+      label: "order Date",
       options: {
         filter: true,
         sort: true,
@@ -62,7 +72,16 @@ function Orders() {
 
     {
       name: "deliveryDate",
-      label: "deliveryDate",
+      label: "Delivery Date",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+
+    {
+      name: "totalItems",
+      label: "total Items",
       options: {
         filter: true,
         sort: true,
@@ -98,20 +117,45 @@ function Orders() {
       },
     },
     {
+      name: "userImage",
+      label: "Image",
+      align: "center",
+      options: {
+        align: "center",
+        filter: true,
+        sort: true,
+        customBodyRender: (value) => {
+          return (
+            <div className="user" onClick={togglePopup}>
+              {console.log(value)}
+              <img
+                src={
+                  value
+                    ? value
+                    : "https://cdn.vectorstock.com/i/1000x1000/30/97/flat-business-man-user-profile-avatar-icon-vector-4333097.webp"
+                }
+              ></img>
+            </div>
+          );
+        },
+      },
+    },
+    {
       name: "orderNo",
       label: "ACTION",
       options: {
         filter: false,
         sort: false,
         customBodyRender: (value, tableMeta) => {
-          const orderId = tableMeta.rowData[0];
+          const orderId = tableMeta.rowData[1];
           return (
             <Button
               variant="contained"
-              color={tableMeta.rowData[5] == 1 ? "success" : "error"}
+              // color={tableMeta.rowData[5] == 1 ? "success" : "error"}
+              color="success"
               className="formButton"
               name="userStatus"
-              onClick={(e) => onApprovalClick(orderId, tableMeta)}
+              onClick={(e) => changeStatus(orderId, tableMeta)}
             >
               Change Status
             </Button>
@@ -127,23 +171,101 @@ function Orders() {
         sort: false,
         customBodyRender: (id) => {
           return (
-            <button
+            <DeleteForeverIcon
               className="delete-btn formButtonCancel"
               onClick={() => handleOnDelete(id)}
-            >
-              🗑️
-            </button>
+            ></DeleteForeverIcon>
           );
         },
       },
     },
+    // {
+    //   name: "orderId",
+    //   label: " ",
+    //   options: {
+    //     filter: true,
+    //     sort: false,
+    //     customBodyRender: (id) => {
+    //       return (
+    //         <VisibilityIcon
+    //           className="delete-btn formButtonCancel"
+    //           onClick={() => handleOnView(id)}
+    //         ></VisibilityIcon>
+    //       );
+    //     },
+    //   },
+    // },
   ];
 
+  const options = {
+    selectableRows: "none",
+    customToolbar: () => {},
+  };
+
+  const togglePopup = () => {
+    setImgPopup(!imgPopup);
+  };
+  // const paymentModeColumns = [
+  //   {
+  //     name: "#",
+  //     style: {
+  //       maxWidth: "20%",
+  //       textAlign: "left",
+  //     },
+  //   },
+  //   {
+  //     name: "freightType.formLabels.freightType",
+  //     style: {
+  //       minWidth: "40%",
+  //       textAlign: "left",
+  //     },
+  //     sort: true,
+  //   },
+  //   {
+  //     name: "freightType.formLabels.status",
+  //     style: {
+  //       textAlign: "left",
+  //     },
+  //     sort: true,
+  //     filter: ["Active", "Blocked"],
+  //   },
+  //   {
+  //     name: "freightType.gridLabels.Edit",
+  //     style: {
+  //       textAlign: "left",
+  //     },
+  //     sort: false,
+  //   },
+  // ];
+
+  // const renderTableData = () => {
+  //   let dataTableOBJ = [];
+  //   orderDetails &&
+  //     orderDetails.map((value, i) => {
+  //       dataTableOBJ.push([
+  //         i + 1,
+  //         value.customerName,
+  //         value.Status == 1 ? (
+  //           <Tooltip title="Active">
+  //             <Done color="success" />
+  //           </Tooltip>
+  //         ) : (
+  //           <Tooltip title="Blocked">
+  //             <Close color="error" />
+  //           </Tooltip>
+  //         ),
+  //         <Tooltip title="Edit">
+  //           {/* <Edit color="success" onClick={() => editTableRow(value)} /> */}
+  //         </Tooltip>,
+  //       ]);
+  //     });
+  //   return dataTableOBJ;
+  // };
   /*          ------------ useEffects -------------             */
   console.log("-------", orderDetails);
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [dataLoad]);
 
   //--------  functions -------------->
   //       > get all orders >
@@ -152,52 +274,76 @@ function Orders() {
       .get(API_URL + "orders/getAllOrders")
       .then((response) => {
         console.log(response.data);
+        setOrderList(response.data);
         const updatedFormDataArray = response.data
           ? response.data.map(
               (el, key) => (
-                console.log(el),
+                console.log(el[key]),
                 {
                   slNo: key + 1,
-                  customerId: el.customerId,
-                  orderStatus: el.orderStatus,
-                  orderId: el.orderNo,
-                  deliveryDate: el.orderDate,
-                  totalItems: el.totalItems,
+                  orderId: el.order_id,
+                  orderStatus: el.status,
+                  salesman: el.salesman_id,
+                  customerName: el.customer_Id,
+                  totalItems: el.order_totalItems,
+                  orderDate: el.formatted_order_date,
+                  deliveryDate: el.order_deliveryDate,
+                  orderStatus: el.status,
                 }
               )
             )
           : [];
+        console.log("aaaaaaa", updatedFormDataArray);
         setOrderDetails(updatedFormDataArray);
       })
       .catch((error) => console.error("Error fetching data:", error));
   };
 
-  const onApprovalClick = (id, tableMeta) => {
-    console.log(id, tableMeta);
+  const changeStatus = (id, tableMeta) => {
+    console.log(id, "ppppppppppppppppppppppppp");
     setPopup(true);
     setSelectedOrderId(id);
   };
 
   const handleClose = () => {
     setPopup(false);
+    setWarnning(false);
+  };
+  const handleOnDelete = (id) => {
+    console.log(id);
+    setWarnning(true);
+    setSelectedOrderId(id);
+  };
+  const handleOnView = () => {
+    setToggle(true);
   };
   const handleAction = (e) => {
     const name = e.target.name;
-    console.log("name", name);
-    const formData = orderDetails.find((el) => el.orderId === selectedOrderId);
+    console.log(selectedOrderId, "name", name);
+    const formData = orderList.find((el) => el.order_id === selectedOrderId);
+    console.log(
+      orderList,
+      "orderList00",
+      selectedOrderId,
+      "000000000000",
+      formData
+    );
     if (name == "approve") {
-      formData["orderStatus"] = 2;
+      formData["status"] = 2;
     } else if (name == "reject") {
-      formData["orderStatus"] = 3;
+      formData["status"] = 3;
+    } else if (name == "delete") {
+      formData["status"] = 4;
     }
     axios
-      .put(`http://localhost:8081/approveOrder/${selectedOrderId}`, formData)
+      .put(API_URL + `orders/updateOrderMaster/${selectedOrderId}`, formData)
       .then((res) => {
         console.log("res", res.data);
         if (res) {
           setDataLoad(!dataLoad);
         }
         setPopup(false);
+        setWarnning(false);
       })
       .catch((err) => alert(err));
   };
@@ -224,11 +370,19 @@ function Orders() {
     <div className="orderContainer">
       <div className="dataTable">
         <button onClick={fetchData}>adhsfhuisd</button>
+        {/* <Datatable
+          title="orders"
+          column={paymentModeColumns}
+          // createNewDatatTable={() => setModalOpen(true)}
+          data={renderTableData()}
+          // handleFilter={handleFilter}
+          totalCount={10}
+        /> */}
         <MUIDataTable
           title={"Order List"}
           columns={columns}
           data={orderDetails ? orderDetails : []}
-          //  options={options}
+          options={options}
         />
       </div>
       <Modal open={popup} onClose={handleClose}>
@@ -271,6 +425,67 @@ function Orders() {
           </div>
         </Box>
       </Modal>
+      <Modal
+        open={warrning}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <div className="modalContainer">
+            <h3>Do you want to delete</h3>
+            <br />
+            <Stack direction="row" spacing={2}>
+              <Button
+                variant="contained"
+                size="small"
+                color="error"
+                name="delete"
+                onClick={(e) => handleAction(e)}
+              >
+                <BlockIcon />
+                Delete
+              </Button>
+
+              <Button
+                variant="contained"
+                size="small"
+                color="warning"
+                onClick={handleClose}
+              >
+                <CloseIcon />
+                Cancel
+              </Button>
+            </Stack>
+          </div>
+        </Box>
+      </Modal>
+
+      {imgPopup && (
+        <div className="popup-container" onClick={togglePopup}>
+          <div className="popup-content">
+            <img
+              src="https://cdn.vectorstock.com/i/1000x1000/30/97/flat-business-man-user-profile-avatar-icon-vector-4333097.webp"
+              alt="Popup Image"
+            />
+          </div>
+        </div>
+      )}
+      {/* <Modal
+        open={toggle}
+        onClose={() => setWarnning(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <table>
+            <tr>
+              <td>name</td>
+              <td>name</td>
+            </tr>
+          </table>
+        </Box>
+      </Modal> */}
     </div>
   );
 }
@@ -287,6 +502,18 @@ const style = {
   height: "20%",
   width: 360,
   bgcolor: "background.paper",
+  p: 4,
+};
+const style2 = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 1000,
+  height: "80%",
+  bgcolor: "background.paper",
+  border: "none",
+  boxShadow: 24,
   p: 4,
 };
 export default Orders;
