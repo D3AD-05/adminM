@@ -436,7 +436,7 @@ const orderController = {
   FROM 
     order_Master om
      JOIN 
-    customers c ON c.deviceName = om.deviceName 
+    customers c ON c.deviceName = om.deviceName AND c.customer_name = om.customer_Id
     WHERE om.status < 4`;
     // LEFT JOIN salesmen s ON om.salesman_id = s.salesman_id
     // LEFT JOIN customers c ON om.customer_Id = c.customer_id;;
