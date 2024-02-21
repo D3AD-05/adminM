@@ -516,7 +516,6 @@ const orderController = {
       \`order_remarks\` = '${order_remarks}',
       \`order_selectPerson\` = '${order_selectPerson}',
       \`order_mobReferenceNo\` = '${order_mobReferenceNo}',
-     
       \`status\` = ${status},
       \`deviceName\` = '${deviceName}'
       WHERE \`order_id\` = ${orderId};
@@ -635,7 +634,7 @@ const orderController = {
   },
   updateOrderSycStatusWin: (req, res) => {
     console.log(req.params, "--------------------");
-    const { orderId, deviceName } = req.params;
+    const { orderId, deviceName, isSynced } = req.params;
 
     const sql = `
     UPDATE order_Master
@@ -649,7 +648,7 @@ const orderController = {
 
     poolConnect
       .then(() => {
-        pool.query(sql, [orderId, deviceName], (err, result) => {
+        pool.query(sql, [isSynced, orderId, deviceName], (err, result) => {
           if (err) {
             console.error("Error executing query:", err);
             return res
