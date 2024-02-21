@@ -435,7 +435,7 @@ const orderController = {
     c.customer_email
   FROM 
     order_Master om
-    LEFT JOIN 
+     JOIN 
     customers c ON c.deviceName = om.deviceName 
     WHERE om.status < 4`;
     // LEFT JOIN salesmen s ON om.salesman_id = s.salesman_id
@@ -479,9 +479,8 @@ const orderController = {
   },
 
   updateOrderMaster: (req, res) => {
-    console.log(req.params, "updateOrderMaster", req.body);
     const { orderId } = req.params;
-    console.log("");
+    console.log("UPDATE orderId", orderId);
     const {
       order_id,
       order_date,
@@ -504,21 +503,10 @@ const orderController = {
     const modifiedDate = req.body?.modifiedDate;
 
     const sql = `
-      UPDATE \`defaultdb\`.\`order_Master\`
+       UPDATE order_Master
       SET
-      \`order_id\` = ${order_id},
-      \`order_date\` = '${order_date}',
-      \`order_deliveryDate\` = '${order_deliveryDate}',
-      \`salesman_id\` = '${salesman_id}',
-      \`customer_Id\` = '${customer_Id}',
-      \`order_totalItems\` = '${order_totalItems}',
-      \`order_totalApxWt\` = '${order_totalApxWt}',
-      \`order_remarks\` = '${order_remarks}',
-      \`order_selectPerson\` = '${order_selectPerson}',
-      \`order_mobReferenceNo\` = '${order_mobReferenceNo}',
-      \`status\` = ${status},
-      \`deviceName\` = '${deviceName}'
-      WHERE \`order_id\` = ${orderId};
+       status = ${status}
+      WHERE order_id = ${orderId};
     `;
 
     poolConnect
@@ -532,7 +520,7 @@ const orderController = {
               .json({ error: "An error occurred while executing the query" });
           }
           res.status(200).json({ message: "Order updated successfully" });
-          console.log(res.status);
+          console.log("---------------->", result);
         });
       })
       .catch((err) => {
