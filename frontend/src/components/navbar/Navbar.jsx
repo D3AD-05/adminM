@@ -20,6 +20,10 @@ function NavBar() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const handleOnLogout = () => {
+    navigate("/login");
+    // document.cookie = "loggedIn=" + null;
+  };
   return (
     <div className="navbar">
       <div className="logo">
@@ -55,7 +59,7 @@ function NavBar() {
       >
         <MenuItem onClick={handleClose}>Profile</MenuItem>
         <MenuItem onClick={handleClose}>My account</MenuItem>
-        <MenuItem onClick={handleClose}>Logout</MenuItem>
+        <MenuItem onClick={handleOnLogout}>Logout</MenuItem>
       </Menu>
     </div>
   );

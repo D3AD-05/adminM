@@ -8,9 +8,9 @@ function ApprovalWaiting() {
   const navigate = useNavigate();
 
   const userId = location.state?.userId;
-  console.log(location);
+  console.log(location, userId);
   const handleOnrefresh = () => {
-    axios.post(API_URL + `items/createItem`).then((response) => {
+    axios.get(API_URL + `users/checkForApproval/${userId}`).then((response) => {
       console.log(response.data.userStatus);
       if (response.data.userStatus === 1) {
         alert("pleas contact admin");

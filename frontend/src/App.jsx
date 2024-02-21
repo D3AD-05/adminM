@@ -21,6 +21,8 @@ const App = () => {
     return getCookieValue("loggedIn") !== null;
   });
 
+  console.log("isLoggedIn", isLoggedIn);
+
   useEffect(() => {
     const loggedInValue = getCookieValue("loggedIn");
     if (loggedInValue !== null) {

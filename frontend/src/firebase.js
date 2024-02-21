@@ -7,13 +7,22 @@ import {
   signInWithPhoneNumber,
 } from "firebase/auth";
 import "firebase/storage";
+// const firebaseConfig = {
+//   apiKey: "AIzaSyC29QTKWcLuSeZkBXVfMedhmZy69Oq5z6k",
+//   authDomain: "test-f56db.firebaseapp.com",
+//   projectId: "test-f56db",
+//   storageBucket: "test-f56db.appspot.com",
+//   messagingSenderId: "361684335587",
+//   appId: "1:361684335587:web:86d9bdc2c96fbd3c52fed6",
+// };
+
 const firebaseConfig = {
-  apiKey: "AIzaSyC29QTKWcLuSeZkBXVfMedhmZy69Oq5z6k",
-  authDomain: "test-f56db.firebaseapp.com",
-  projectId: "test-f56db",
-  storageBucket: "test-f56db.appspot.com",
-  messagingSenderId: "361684335587",
-  appId: "1:361684335587:web:86d9bdc2c96fbd3c52fed6",
+  apiKey: "AIzaSyDGr9fNXs3nBqfDesilmq81SKWidNHwdMg",
+  authDomain: "admin-563de.firebaseapp.com",
+  projectId: "admin-563de",
+  storageBucket: "admin-563de.appspot.com",
+  messagingSenderId: "909219776195",
+  appId: "1:909219776195:web:bc82d9acd1b071435d8476",
 };
 
 // Initialize Firebase
