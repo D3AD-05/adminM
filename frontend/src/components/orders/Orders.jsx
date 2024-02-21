@@ -254,7 +254,7 @@ function Orders() {
                   orderStatus: el.status,
                   contactPerson: el.customer_contactPerson,
                   aproximateWt: el.order_totalApxWt,
-                  customerimg: el.customer_img,
+                  customerimg: el.firebase_imgUrl,
                 }
               )
             )
@@ -301,6 +301,13 @@ function Orders() {
     } else if (name == "delete") {
       formData["status"] = 4;
     }
+
+    // createdBy,
+    // createdDate,
+    // modifiedBy,
+    // modifiedDate,
+    // isSynced
+
     axios
       .put(API_URL + `orders/updateOrderMaster/${selectedOrderId}`, formData)
       .then((res) => {

@@ -108,7 +108,7 @@ function Users() {
               {console.log(value)}
               <img
                 src={
-                  value
+                  value != null
                     ? value
                     : "https://cdn.vectorstock.com/i/1000x1000/30/97/flat-business-man-user-profile-avatar-icon-vector-4333097.webp"
                 }

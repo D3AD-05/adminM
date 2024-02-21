@@ -415,9 +415,24 @@ const orderController = {
   getAllOrders: (req, res) => {
     console.log("get all orders    ");
     const sql = `SELECT 
-    om.*,
+    om.order_id,
+    om.order_date,
+    om.order_deliveryDate,
+    om.salesman_id,
+    om.customer_Id,
+    om.order_totalItems,
+    om.order_totalApxWt,
+    om.order_remarks,
+    om.order_selectPerson,
+    om.order_mobReferenceNo,
+    om.status,
     DATE_FORMAT(om.order_date, '%Y-%m-%d') AS formatted_order_date ,
-    c.*
+    c.customer_name,
+    c.customer_address,
+    c.customer_phoneNo,
+    c.customer_contactPerson,
+    c.firebase_imgUrl,
+    c.customer_email
   FROM 
     order_Master om
     LEFT JOIN 
@@ -466,6 +481,7 @@ const orderController = {
   updateOrderMaster: (req, res) => {
     console.log(req.params, "updateOrderMaster", req.body);
     const { orderId } = req.params;
+    console.log("");
     const {
       order_id,
       order_date,
@@ -478,13 +494,14 @@ const orderController = {
       order_selectPerson,
       order_mobReferenceNo,
       isSynced,
-      createdBy,
-      createdDate,
-      modifiedBy,
-      modifiedDate,
       status,
       deviceName,
     } = req.body;
+
+    const createdBy = req.body?.createdBy;
+    const createdDate = req.body?.createdDate;
+    const modifiedBy = req.body?.modifiedBy;
+    const modifiedDate = req.body?.modifiedDate;
 
     const sql = `
       UPDATE \`defaultdb\`.\`order_Master\`
@@ -499,11 +516,7 @@ const orderController = {
       \`order_remarks\` = '${order_remarks}',
       \`order_selectPerson\` = '${order_selectPerson}',
       \`order_mobReferenceNo\` = '${order_mobReferenceNo}',
-      \`isSynced\` = ${isSynced},
-      \`createdBy\` = '${createdBy}',
-      \`createdDate\` = '${createdDate}',
-      \`modifiedBy\` = '${modifiedBy}',
-      \`modifiedDate\` = '${modifiedDate}',
+     
       \`status\` = ${status},
       \`deviceName\` = '${deviceName}'
       WHERE \`order_id\` = ${orderId};
@@ -579,19 +592,39 @@ const orderController = {
     }
   },
 
-  getAllOrders: (req, res) => {
+  getApprovedOrderDetails: (req, res) => {
     console.log("get all orders");
     const sql = `
-        SELECT 
-            om.*,
-            DATE_FORMAT(om.order_date, '%Y-%m-%d') AS formatted_order_date,
-            c.*
-        FROM 
-            order_Master om
-        LEFT JOIN 
-            customers c ON c.deviceName = om.deviceName 
-        WHERE 
-            om.status < 4`;
+       SELECT 
+    om.order_id,
+    om.order_date,
+    om.order_deliveryDate,
+    om.salesman_id,
+    om.customer_Id,
+    om.order_totalItems,
+    om.order_totalApxWt,
+    om.order_remarks,
+    om.order_selectPerson,
+    om.order_mobReferenceNo,
+    om.status,
+    om.deviceName,
+    DATE_FORMAT(om.order_date, '%Y-%m-%d') AS formatted_order_date ,
+    od.orderNo,
+    od.prodId,
+    od.itemId,
+    od.designCId,
+    od.qty,
+    od.Gwt,
+    od.remark,
+    od.Stonewt,
+    od.Diawt,
+    od.NetWt,
+    od.size,
+    od.ItemCategoryName
+  FROM 
+    order_Master om
+    LEFT JOIN order_details od ON od.deviceName = om.deviceName AND om.order_mobReferenceNo = od.orderNo
+    WHERE om.status = 2 AND windowsSynced !=1 `;
     pool.query(sql, (err, data) => {
       if (err) {
         console.error("Error retrieving data:", err);
@@ -600,5 +633,60 @@ const orderController = {
       return res.status(200).json(data);
     });
   },
+  updateOrderSycStatusWin: (req, res) => {
+    console.log(req.params, "--------------------");
+    const { orderId, deviceName } = req.params;
+
+    const sql = `
+    UPDATE order_Master
+    SET
+    windowsSynced = 1
+    WHERE
+    order_id =?
+    AND
+    deviceName = ?
+  `;
+
+    poolConnect
+      .then(() => {
+        pool.query(sql, [orderId, deviceName], (err, result) => {
+          if (err) {
+            console.error("Error executing query:", err);
+            return res
+              .status(500)
+              .json({ error: "An error occurred while executing the query" });
+          }
+          res.status(200).json({ message: "User status synced successfully" });
+        });
+      })
+      .catch((err) => {
+        console.error("Error connecting to MySQL:", err);
+        res.status(500).json({
+          error: "An error occurred while connecting to the database",
+        });
+      });
+  },
 };
 module.exports = orderController;
+
+// CREATE TABLE "order_Master" (
+//   "" int NOT NULL AUTO_INCREMENT,
+//   "" varchar(45) DEFAULT NULL,
+//   "" varchar(45) DEFAULT NULL,
+//   "" varchar(45) DEFAULT NULL,
+//   "" varchar(45) DEFAULT NULL,
+//   "" varchar(50) DEFAULT NULL,
+//   "" varchar(45) DEFAULT NULL,
+//   "" varchar(1500) DEFAULT NULL,
+//   "" varchar(50) DEFAULT NULL,
+//   "" int DEFAULT NULL,
+//   "isSynced" int DEFAULT NULL,
+//   "createdBy" varchar(45) DEFAULT NULL,
+//   "createdDate" varchar(45) DEFAULT NULL,
+//   "modifiedBy" varchar(45) DEFAULT NULL,
+//   "modifiedDate" varchar(45) DEFAULT NULL,
+//   "" int DEFAULT '1',
+//   "deviceName" varchar(45) DEFAULT NULL,
+//   "windowsSynced" int DEFAULT NULL,
+//   PRIMARY KEY ("order_id")
+// );

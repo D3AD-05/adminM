@@ -5,7 +5,6 @@ import { PhoneAuth } from "../../components";
 import "@fortawesome/fontawesome-free/css/all.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../utlity/authProvider";
 import { API_URL } from "../../utlity/appConstants";
 
 const SignIn = () => {
@@ -27,12 +26,12 @@ const SignIn = () => {
   const signUpSchema = z.object({
     userName: z
       .string()
-      .min(1, { message: "Username is required" }) // Minimum length of 1 ensures nonemptiness
+      .min(1, { message: "Username is required" })
       .min(3, { message: "Username must be at least 3 characters long" }),
     userEmail: z
       .string()
       .email({ message: "Invalid email address" })
-      .min(2, { message: "Email is required" }), // Minimum length of 1 ensures nonemptiness
+      .min(2, { message: "Email is required" }),
   });
 
   const handleSignUpClick = () => {
