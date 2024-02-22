@@ -126,13 +126,14 @@ const UserController = {
 
   /*  -------------------  checkPhoneNumber ----------------------------- */
   checkPhoneNumber: (req, res) => {
-    const phoneNumber = req.body.phoneNumber;
-    console.log("ssssssssssss", phoneNumber);
+    console.log("checkPhoneNumber");
+
+    const phoneNumber = req.params.phoneNumber;
+
     const sql = `
     SELECT *  FROM userDetails WHERE User_PhoneNo = ${phoneNumber} AND User_Status = 2
   `;
     pool.query(sql, [phoneNumber], (err, data) => {
-      console.log(sql, phoneNumber);
       if (err) {
         console.error("Error retrieving data:", err);
         return res.status(500).json({ error: "Internal Server Error" });
