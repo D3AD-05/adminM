@@ -1,19 +1,30 @@
 import React, { useState } from "react";
 import { z } from "zod";
 import "./signin.css";
-import { PhoneAuth } from "../../components";
 import "@fortawesome/fontawesome-free/css/all.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "../../utlity/appConstants";
+import { Button, TextField } from "@mui/material";
+import { Toaster, toast } from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import { auth } from "../../firebase";
 
 const SignIn = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isSignUpMode, setIsSignUpMode] = useState(false);
   const [verifiedData, setVerifiedData] = useState({});
   const [selectedUser, setSelectedUser] = useState(3);
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneNumber2, setPhoneNumber2] = useState("");
   const [enable, setEnable] = useState(false);
+  const [isRecaptchaVerified, setIsRecaptchaVerified] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
+  const [otpError, setOtpError] = useState(false);
+  const [confirmationResult, setConfirmationResult] = useState(null);
+
   const [formData, setFormData] = useState({
     userName: "",
     userEmail: "",
@@ -24,6 +35,10 @@ const SignIn = () => {
   });
   const [formErrors, setFormErrors] = useState({});
   const [phoneError, setPhoneError] = useState("");
+  const [phoneError2, setPhoneError2] = useState("");
+  const [userExist, setUserExist] = useState(false);
+
+  // ---------------------------------------------------------->
   const phoneSchema = z
     .string()
     .nonempty({ message: "Phone number is required" })
@@ -34,6 +49,10 @@ const SignIn = () => {
       .string()
       .min(1, { message: "Username is required" })
       .min(3, { message: "Username must be at least 3 characters long" }),
+    userPhoneNo: z
+      .string()
+      .nonempty({ message: "Phone number is required" })
+      .length(10, { message: "Phone number must be 10 digits" }),
     userEmail: z
       .string()
       .email({ message: "Invalid email address" })
@@ -48,21 +67,9 @@ const SignIn = () => {
     setIsSignUpMode(false);
   };
 
-  const dataFromChild = (data) => {
-    setVerifiedData(data);
-    if (data.from === "sign_in") {
-      setIsSignUpMode(true);
-      setEnable(true);
-
-      formData["userPhoneNo"] = data.phoneNumber;
-    } else if (data.from === "sign_up") {
-      formData["userPhoneNo"] = data.phoneNumber;
-      setEnable(true);
-    }
-  };
-
   const handleOnChange = (event) => {
     const { name, value } = event.target;
+    // console.log(name);
     setFormData({ ...formData, [name]: value });
 
     if (name === "userType") {
@@ -71,11 +78,15 @@ const SignIn = () => {
         userType: parseInt(value),
       }));
       setSelectedUser(parseInt(value));
-    } else if (name === "phone") {
+    } else if (name === "userPhoneNo") {
       setPhoneNumber(value);
       setPhoneError("");
+    } else if (name === "phone2") {
+      setPhoneNumber2(value);
+      setPhoneError2("");
     }
   };
+
   const handleOnBlur = (fieldName) => {
     const validationResult = signUpSchema
       .pick(fieldName)
@@ -96,20 +107,31 @@ const SignIn = () => {
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
+    console.log(formData);
     const validationResult = signUpSchema.safeParse(formData);
 
-    if (validationResult.success) {
-      axios
-        .post(API_URL + "users/createUser", formData)
-        .then((res) => {
-          if (res.status === 200) {
-            const userId = res.data.insertId;
-            document.cookie = "loggedIn=" + userId;
+    if (validationResult.success && !userExist && isRecaptchaVerified) {
+      confirmationResult
+        .confirm(verificationCode)
+        .then((userCredential) => {
+          console.log("Verification successful:", userCredential);
+          axios
+            .post(API_URL + "users/createUser", formData)
+            .then((res) => {
+              // console.log(res);
+              if (res.data.insertId > 0) {
+                const userId = res.data.insertId;
+                document.cookie = "loggedIn=" + userId;
 
-            navigate("/approvalWaiting", { state: { userId: userId } });
-          }
+                navigate("/approvalWaiting", { state: { userId: userId } });
+              }
+            })
+            .catch((err) => alert(err));
         })
-        .catch((err) => alert(err));
+        .catch((error) => {
+          console.error("Error verifying code:", error);
+          setOtpError(true);
+        });
     } else {
       setFormErrors(
         validationResult.error.errors.reduce((acc, curr) => {
@@ -121,30 +143,29 @@ const SignIn = () => {
       );
     }
   };
+
   const handleOnLogin = (e) => {
     e.preventDefault();
-    const validationResult = phoneSchema.safeParse(phoneNumber);
+    const validationResult = phoneSchema.safeParse(phoneNumber2);
     if (!validationResult.success) {
-      setPhoneError(validationResult.error.errors[0].message);
+      setPhoneError2(validationResult.error.errors[0].message);
       return;
     } else {
-      setPhoneError("");
+      setPhoneError2("");
     }
 
     if (validationResult.success) {
-      // Construct the data to be sent in the POST request
       const data = {
-        phoneNumber: phoneNumber,
+        phoneNumber: phoneNumber2,
         userType: selectedUser,
       };
 
-      // Make the POST request to check if the phone number exists
       axios
         .post(API_URL + "users/checkPhoneNumber", data)
         .then((response) => {
           if (response.data.length > 0) {
-            console.log(response.data, "------");
-            const userId = response.data[0].User_Id;
+            // console.log(response.data, "------");
+            const userId = response.data[0]?.User_Id;
             let extendTill = new Date();
             extendTill.setDate(extendTill.getDate() + 1);
             document.cookie = `loggedIn=${userId}; expires=${extendTill.toUTCString()}; path=/`;
@@ -152,18 +173,81 @@ const SignIn = () => {
             navigate("/");
             window.location.reload();
           } else {
-            setPhoneError("no user Found,please sigin in");
+            setPhoneError2("no user Found/ Invalid credential");
             setTimeout(() => {
               setIsSignUpMode(true);
             }, 1200);
           }
         })
         .catch((error) => {
-          // Handle any errors that occur during the request
           console.error("Error checking phone number:", error);
-          // You may want to display an error message to the user
         });
     }
+  };
+
+  const handleSendCode = async () => {
+    console.log("handle confirm");
+    try {
+      const validationResult = phoneSchema.safeParse(phoneNumber);
+      if (!validationResult.success) {
+        setPhoneError(validationResult.error.errors[0].message);
+        return;
+      }
+
+      const mobNumber = "+91" + phoneNumber.trim();
+      var response = [];
+      const data = { phoneNumber: phoneNumber };
+      axios
+        .get(API_URL + `users/isUserExist/${phoneNumber}`)
+        .then((response) => {
+          console.log(response.data.length);
+
+          if (response.data.length > 0) {
+            toast.error("phone number already used!!");
+            setPhoneError("number already in use!!!");
+            setUserExist(false);
+            return;
+          } else {
+            console.log("aaaaaaaaa");
+            setUserExist(true);
+          }
+        });
+      console.log("userExist", userExist);
+      if (userExist) {
+        const recaptcha = new RecaptchaVerifier(auth, "recaptcha", {});
+        const confirmation = await signInWithPhoneNumber(
+          auth,
+          mobNumber,
+          recaptcha
+        );
+
+        setConfirmationResult(confirmation);
+        setIsRecaptchaVerified(true);
+        toast.success("recaptcha succesfull!!");
+      }
+    } catch (error) {
+      console.error("Error sending code:", error);
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    try {
+      const data = await confirmationResult.confirm(verificationCode);
+      toast.promise(confirmationResult.confirm(verificationCode), {
+        loading: "Verifying...",
+        success: <b>Verified succesfully! click login in</b>,
+        error: <b>Could not save.</b>,
+      });
+      // console.log(data);
+    } catch (error) {
+      console.error("Error sending code:", error);
+      setOtpError(true);
+    }
+  };
+
+  const verifictionInputHandler = (e) => {
+    setVerificationCode(e.target.value);
+    setOtpError(false);
   };
 
   return (
@@ -203,13 +287,13 @@ const SignIn = () => {
               <input
                 type="tel"
                 id="phone"
-                name="phone"
+                name="phone2"
                 placeholder="Enter 10 digit Mobile Number"
-                value={phoneNumber}
+                value={phoneNumber2}
                 onChange={handleOnChange}
               />
             </div>
-            {phoneError && <span style={{ color: "red" }}>{phoneError}</span>}
+            {phoneError2 && <span style={{ color: "red" }}>{phoneError2}</span>}
             {/* PhoneAuth component
             {!isSignUpMode && (
               <PhoneAuth
@@ -237,7 +321,6 @@ const SignIn = () => {
           >
             {/* Sign up form title */}
             <h2 className="title">Sign up</h2>
-
             {/* Error messages */}
             {verifiedData && verifiedData.from === "isNewUser" ? (
               <h3 style={{ color: "red" }}>
@@ -246,14 +329,12 @@ const SignIn = () => {
             ) : verifiedData && verifiedData.from === "sign_up" ? (
               <h3 style={{ color: "green" }}>{verifiedData.msg}</h3>
             ) : null}
-
             {/* {formErrors.userType && (
               <p className="error-message">{formErrors.userType}</p>
             )}
             {formErrors.phone && (
               <p className="error-message">{formErrors.phone}</p>
             )} */}
-
             {/* User name input field */}
             <div className="input-field">
               <i className="fas fa-user"></i>
@@ -270,7 +351,7 @@ const SignIn = () => {
             )}
             {/* User email input field */}
             <div className="input-field">
-              <i className="fas fa-user"></i>
+              <i className="fas fa-envelope"></i>
               <input
                 type="text"
                 name="userEmail"
@@ -282,7 +363,6 @@ const SignIn = () => {
             {formErrors.userEmail && (
               <span className="error-message">{formErrors.userEmail}</span>
             )}
-
             {/* User type select field */}
             <div className="input-field">
               <i
@@ -307,30 +387,43 @@ const SignIn = () => {
                 <option value={1}>Admin</option>
               </select>
             </div>
-
-            {/* Phone input field */}
-            {verifiedData && verifiedData.from ? (
-              <div className="input-field">
-                <i className="fas fa-phone"></i>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  placeholder="Enter 10 digit Mobile Number"
-                  value={verifiedData.phoneNumber}
-                  pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}"
-                  disabled
-                />
-              </div>
-            ) : (
-              ""
-              // <PhoneAuth
-              //   sendDataToParent={dataFromChild}
-              //   isSignUpMode={isSignUpMode}
-              // />
+            <div className="input-field">
+              <i className="fas fa-phone"></i>
+              <input
+                type="tel"
+                id="userPhoneNo"
+                name="userPhoneNo"
+                placeholder="Enter 10 digit Mobile Number"
+                value={phoneNumber}
+                onChange={handleOnChange}
+              />
+            </div>
+            {formErrors.userPhoneNo && (
+              <span className="error-message">{formErrors.userPhoneNo}</span>
             )}
-
-            {/* Submit button */}
+            {phoneError && <span style={{ color: "red" }}>{phoneError}</span>}
+            {isRecaptchaVerified ? (
+              ""
+            ) : (
+              <Button variant="text" onClick={handleSendCode}>
+                Confirm
+              </Button>
+            )}
+            {!isRecaptchaVerified ? <div id="recaptcha"></div> : ""}
+            <TextField
+              className="input-field"
+              label="Verification Code"
+              variant="standard"
+              value={verificationCode}
+              onChange={verifictionInputHandler}
+            />{" "}
+            {otpError ? (
+              <span style={{ color: "red" }}>Invalid OTP</span>
+            ) : null}
+            <Button variant="text" onClick={handleVerifyCode}>
+              Verify Code
+            </Button>
+            <Toaster position="top-center" reverseOrder={true} />
             <input
               type="submit"
               className={enable ? "btn btn" : "btn btn2"}

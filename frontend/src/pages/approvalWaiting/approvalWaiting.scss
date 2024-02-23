@@ -1,0 +1,48 @@
+.approval-waiting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #f3f3f3; /* Red background color */
+  color: #721c24; /* Dark red text color */
+  font-family: Arial, sans-serif;
+
+  .header-bar {
+    background-color: #dc3545; /* Red header bar color */
+    color: #fff; /* White text color */
+    font-size: 18px;
+    font-weight: bold;
+    padding: 15px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .warning-logo {
+    width: 150px; /* Adjust size as needed */
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    margin-bottom: 20px;
+  }
+
+  p {
+    margin-bottom: 20px;
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #dc3545; /* Red button color */
+    color: #fff; /* White text color */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: #c82333; /* Darker red on hover */
+    }
+  }
+}

@@ -127,10 +127,30 @@ const UserController = {
   /*  -------------------  checkPhoneNumber ----------------------------- */
   checkPhoneNumber: (req, res) => {
     const phoneNumber = req.body.phoneNumber;
+    const userType = req.body.userType;
     console.log(req.body, "checkPhoneNumber", phoneNumber);
     const sql = `
-    SELECT *  FROM userDetails WHERE User_PhoneNo = ${phoneNumber} AND User_Status = 2
+    SELECT *  FROM userDetails WHERE User_PhoneNo = ${phoneNumber} AND User_Type = ${userType}
   `;
+    console.log(sql);
+    pool.query(sql, [phoneNumber], (err, data) => {
+      if (err) {
+        console.error("Error retrieving data:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+      console.log(data);
+
+      return res.status(200).json(data);
+    });
+  },
+  /*  -------------------  checkPhoneNumber ----------------------------- */
+  isUserExist: (req, res) => {
+    const phoneNumber = req.params.phoneNumber;
+    console.log("checkinh user exist ", phoneNumber);
+    const sql = `
+    SELECT * FROM userDetails WHERE User_PhoneNo = ?
+  `;
+    console.log(sql);
     pool.query(sql, [phoneNumber], (err, data) => {
       if (err) {
         console.error("Error retrieving data:", err);

@@ -8,6 +8,7 @@ router.get("/getAllUsers", UserController.getAllUsers);
 router.post("/createUser", UserController.createUser);
 router.put("/updateUser/:userId", UserController.updateUser);
 router.get("/checkForApproval/:userId", UserController.checkForApproval);
-router.get("/checkPhoneNumber/:phoneNumber", UserController.checkPhoneNumber);
+router.post("/checkPhoneNumber", UserController.checkPhoneNumber);
+router.get("/isUserExist/:phoneNumber", UserController.isUserExist);
 
 module.exports = router;

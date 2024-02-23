@@ -22,7 +22,7 @@ function NavBar() {
   };
   const handleOnLogout = () => {
     navigate("/login");
-    // document.cookie = "loggedIn=" + null;
+    document.cookie = "loggedIn=" + null;
   };
   return (
     <div className="navbar">

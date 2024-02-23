@@ -22,13 +22,14 @@ const App = () => {
   });
 
   console.log("isLoggedIn", isLoggedIn);
-
   useEffect(() => {
     console.log(getCookieValue("loggedIn"));
     const loggedInValue = getCookieValue("loggedIn");
-    console.log(loggedInValue);
-    if (loggedInValue !== null) {
+    console.log(typeof loggedInValue);
+    if (loggedInValue != "null") {
       setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
     }
   }, []);
 

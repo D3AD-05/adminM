@@ -19,11 +19,7 @@ const PhoneAuth = (props) => {
   const [otpError, setOtpError] = useState(false);
   const [isRecaptchaVerified, setIsRecaptchaVerified] = useState(false);
   const [phoneError, setPhoneError] = useState("");
-  console.log(
-    "%cisSignUpMode",
-    "color: green; background: yellow; font-size: 10px",
-    isSignUpMode
-  );
+
   const phoneSchema = z
     .string()
     .nonempty({ message: "Phone number is required" })
@@ -48,7 +44,6 @@ const PhoneAuth = (props) => {
       var response = [];
       var verifiedData = null;
 
-      // if (!isSignUpMode) {
       response = await axios.post(API_URL + "users/checkPhoneNumber", data);
       verifiedData = response.data;
       console.log(response.data);
@@ -60,12 +55,6 @@ const PhoneAuth = (props) => {
         userPhoneNo: response.data[0]?.User_PhoneNo,
       };
       dispatch(setUserDetails(userData));
-      // verifiedData.length > 0
-      //   ? ()
-      //   : null;
-      // console.log(verifiedData.length > 0, isSignUpMode);
-      // }
-      // if (verifiedData && verifiedData.length > 0) {
 
       const recaptcha = new RecaptchaVerifier(auth, "recaptcha", {});
       const confirmation = await signInWithPhoneNumber(
@@ -78,9 +67,6 @@ const PhoneAuth = (props) => {
       setIsRecaptchaVerified(true);
       document.cookie = "loggedIn=" + verifiedData[0]["User_Id"];
       toast.success("recaptcha succesfull!!");
-      // } else {
-      //   toast.error("invalid user phone number");
-      // }
     } catch (error) {
       console.error("Error sending code:", error);
     }
