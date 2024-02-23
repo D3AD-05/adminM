@@ -40,3 +40,68 @@
   max-width: 50%;
   max-height: 50%;
 }
+
+/* styles.scss */
+
+/* styles.scss */
+
+.table-container {
+  width: 100%;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate; /* Use separate border model */
+  border-spacing: 0 20px; /* Increase space between rows (vertical) and columns (horizontal) */
+  background-color: #fff; /* Set background color for the table */
+}
+
+.table thead {
+  display: block; /* Use block display for the table header */
+}
+
+.table th {
+  background-color: #f2f2f2;
+  font-weight: bold; /* Make table headers bold */
+}
+
+.table tbody {
+  display: block; /* Use block display for the table body */
+}
+
+.table tr {
+  display: flex; /* Use flexbox for table rows */
+  justify-content: space-between; /* Distribute cells evenly */
+}
+
+.table th,
+.table td {
+  flex: 1; /* Each cell occupies equal space */
+  padding: 12px; /* Increased padding for better spacing */
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.table th:first-child,
+.table td:first-child {
+  padding-left: 20px; /* Increased left padding for better alignment */
+}
+
+.table th:last-child,
+.table td:last-child {
+  padding-right: 20px; /* Increased right padding for better alignment */
+}
+.order-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.order-image {
+  width: 100%;
+  height: auto;
+  margin-top: 16px;
+  border-radius: 8px;
+}

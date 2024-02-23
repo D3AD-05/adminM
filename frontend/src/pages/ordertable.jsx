@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ReactModal from "react-modal";
-import Slider from "react-slick"; // Assuming you're using react-slick for the image slider
+import Slider from "react-slick";
 
 const OrderTable = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);

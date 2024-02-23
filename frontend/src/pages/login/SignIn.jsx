@@ -174,9 +174,9 @@ const SignIn = () => {
             window.location.reload();
           } else {
             setPhoneError2("no user Found/ Invalid credential");
-            setTimeout(() => {
-              setIsSignUpMode(true);
-            }, 1200);
+            // setTimeout(() => {
+            //   setIsSignUpMode(true);
+            // }, 1200);
           }
         })
         .catch((error) => {

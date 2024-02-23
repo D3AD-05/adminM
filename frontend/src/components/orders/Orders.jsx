@@ -18,7 +18,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { Typography } from "@mui/material";
 import "./orders.scss";
-
+import Slider from "react-slick";
 /*-----------========================-------------------------*/
 
 function Orders() {
@@ -203,23 +203,30 @@ function Orders() {
         },
       },
     },
-    // {
-    //   name: "orderId",
-    //   label: " ",
-    //   options: {
-    //     filter: true,
-    //     sort: false,
-    //     customBodyRender: (id) => {
-    //       return (
-    //         <VisibilityIcon
-    //           className="delete-btn formButtonCancel"
-    //           onClick={() => handleOnView(id)}
-    //         ></VisibilityIcon>
-    //       );
-    //     },
-    //   },
-    // },
+    {
+      name: "orderId",
+      label: " ",
+      options: {
+        filter: true,
+        sort: false,
+        customBodyRender: (id) => {
+          return (
+            <VisibilityIcon
+              className="delete-btn formButtonCancel"
+              onClick={() => handleOnView(id)}
+            ></VisibilityIcon>
+          );
+        },
+      },
+    },
   ];
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  };
 
   const options = {
     selectableRows: "none",
@@ -278,8 +285,9 @@ function Orders() {
     setWarnning(true);
     setSelectedOrderId(id);
   };
-  const handleOnView = () => {
+  const handleOnView = (id) => {
     setToggle(true);
+    setSelectedOrderId(id);
   };
   const handleAction = (e) => {
     const name = e.target.name;
@@ -435,21 +443,67 @@ function Orders() {
           </div>
         </div>
       )}
-      {/* <Modal
+
+      <Modal
         open={toggle}
-        onClose={() => setWarnning(false)}
+        onClose={() => setToggle(false)}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
-          <table>
-            <tr>
-              <td>name</td>
-              <td>name</td>
-            </tr>
-          </table>
+        <Box sx={style2}>
+          <>
+            {orderList
+              .filter((el) => el.order_id === selectedOrderId)
+              .map((order, index) => (
+                <div key={index} className="order-card">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Contact Person</th>
+                        <th>Customer Name</th>
+                        <th>Customer Address</th>
+                        <th>Customer Phone</th>
+                        <th>Order Date</th>
+                        <th>Delivery Date</th>
+                        <th>Total Items</th>
+                        <th>Total Weight</th>
+                        <th>Remarks</th>
+                        <th>Select Person</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>{order.customer_contactPerson}</td>
+                        <td>{order.customer_name}</td>
+                        <td>{order.customer_address}</td>
+                        <td>{order.customer_phoneNo}</td>
+                        <td>{order.order_date}</td>
+                        <td>{order.order_deliveryDate}</td>
+                        <td>{order.order_totalItems}</td>
+                        <td>{order.order_totalApxWt}</td>
+                        <td>{order.order_remarks}</td>
+                        <td>{order.order_selectPerson}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <img
+                    src={order.firebase_imgUrl}
+                    alt=""
+                    className="order-image"
+                  />
+                </div>
+              ))}
+          </>
+
+          {/* <Slider {...settings}>
+            {selectedOrder.images.map((image, index) => (
+              <div key={index}>
+                <img src={image} alt={`Image ${index}`} />
+              </div>
+            ))}
+          </Slider> */}
         </Box>
-      </Modal> */}
+      </Modal>
     </div>
   );
 }
@@ -473,8 +527,8 @@ const style2 = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 1000,
-  height: "80%",
+  width: "80%",
+  height: "90%",
   bgcolor: "background.paper",
   border: "none",
   boxShadow: 24,
