@@ -126,10 +126,8 @@ const UserController = {
 
   /*  -------------------  checkPhoneNumber ----------------------------- */
   checkPhoneNumber: (req, res) => {
-    console.log("checkPhoneNumber");
-
-    const phoneNumber = req.params.phoneNumber;
-
+    const phoneNumber = req.body.phoneNumber;
+    console.log(req.body, "checkPhoneNumber", phoneNumber);
     const sql = `
     SELECT *  FROM userDetails WHERE User_PhoneNo = ${phoneNumber} AND User_Status = 2
   `;

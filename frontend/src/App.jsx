@@ -24,7 +24,9 @@ const App = () => {
   console.log("isLoggedIn", isLoggedIn);
 
   useEffect(() => {
+    console.log(getCookieValue("loggedIn"));
     const loggedInValue = getCookieValue("loggedIn");
+    console.log(loggedInValue);
     if (loggedInValue !== null) {
       setIsLoggedIn(true);
     }
@@ -59,7 +61,10 @@ const App = () => {
 
 // authenticated routes
 const AuthenticatedLayout = ({ isLoggedIn }) => {
+  console.log("// authenticated routes");
   if (!isLoggedIn) {
+    console.log(" authenticated");
+
     return <Navigate to="/login" />;
   }
 
