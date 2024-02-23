@@ -107,7 +107,19 @@ const itemController = {
   getAllItems: (req, res) => {
     console.log("______");
     try {
-      const sql = "SELECT * FROM itemMaster";
+      const sql = `SELECT 
+      im.prodId,
+      im.prodCode,
+      im.ItemCategoryName,
+      im.itemName,
+      im.DesignCode,
+      im.Gwt,
+      im.Stonewt,
+      im.Diawt,
+      im.NetWt,
+      im.SuppName
+  FROM 
+      itemMaster im`;
       pool.query(sql, (err, data) => {
         if (err) {
           console.error("Error retrieving data:", err);

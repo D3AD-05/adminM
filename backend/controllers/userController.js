@@ -148,7 +148,19 @@ const UserController = {
     const phoneNumber = req.params.phoneNumber;
     console.log("checkinh user exist ", phoneNumber);
     const sql = `
-    SELECT * FROM userDetails WHERE User_PhoneNo = ?
+    SELECT 
+    User_Id,
+    User_Name,
+    User_PhoneNo,
+    User_Email,
+    User_Image,
+    User_Type,
+    User_Status 
+FROM 
+    userDetails 
+WHERE 
+    User_PhoneNo = ?;
+
   `;
     console.log(sql);
     pool.query(sql, [phoneNumber], (err, data) => {

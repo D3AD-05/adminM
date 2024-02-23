@@ -80,6 +80,14 @@ function Orders() {
       },
     },
     {
+      name: "contactPhoneNo",
+      label: "Phone Number",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+    {
       name: "contactPerson",
       label: "contact Person",
       options: {
@@ -144,7 +152,6 @@ function Orders() {
         customBodyRender: (value) => {
           return (
             <div className="user" onClick={() => togglePopup(value)}>
-              {console.log(value)}
               <img
                 src={
                   value
@@ -225,7 +232,6 @@ function Orders() {
   };
 
   /*          ------------ useEffects -------------             */
-  console.log("-------", orderDetails);
   useEffect(() => {
     fetchData();
   }, [dataLoad]);
@@ -236,37 +242,30 @@ function Orders() {
     axios
       .get(API_URL + "orders/getAllOrders")
       .then((response) => {
-        console.log(response.data);
         setOrderList(response.data);
         const updatedFormDataArray = response.data
-          ? response.data.map(
-              (el, key) => (
-                console.log(el[key]),
-                {
-                  slNo: key + 1,
-                  orderId: el.order_id,
-                  // orderStatus: el.status,
-                  salesman: el.salesman_id,
-                  customerName: el.customer_Id,
-                  totalItems: el.order_totalItems,
-                  orderDate: el.formatted_order_date,
-                  deliveryDate: el.order_deliveryDate,
-                  orderStatus: el.status,
-                  contactPerson: el.customer_contactPerson,
-                  aproximateWt: el.order_totalApxWt,
-                  customerimg: el.firebase_imgUrl,
-                }
-              )
-            )
+          ? response.data.map((el, key) => ({
+              slNo: key + 1,
+              orderId: el.order_id,
+              // orderStatus: el.status,
+              salesman: el.salesman_id,
+              customerName: el.customer_Id,
+              totalItems: el.order_totalItems,
+              orderDate: el.formatted_order_date,
+              deliveryDate: el.order_deliveryDate,
+              orderStatus: el.status,
+              contactPerson: el.customer_contactPerson,
+              aproximateWt: el.order_totalApxWt,
+              customerimg: el.firebase_imgUrl,
+              contactPhoneNo: el.customer_phoneNo,
+            }))
           : [];
-        console.log("aaaaaaa", updatedFormDataArray);
         setOrderDetails(updatedFormDataArray);
       })
       .catch((error) => console.error("Error fetching data:", error));
   };
 
   const changeStatus = (id, tableMeta) => {
-    console.log(id, "ppppppppppppppppppppppppp");
     setPopup(true);
     setSelectedOrderId(id);
   };
@@ -276,7 +275,6 @@ function Orders() {
     setWarnning(false);
   };
   const handleOnDelete = (id) => {
-    console.log(id);
     setWarnning(true);
     setSelectedOrderId(id);
   };
@@ -285,15 +283,8 @@ function Orders() {
   };
   const handleAction = (e) => {
     const name = e.target.name;
-    console.log(selectedOrderId, "name", name);
     const formData = orderList.find((el) => el.order_id === selectedOrderId);
-    console.log(
-      orderList,
-      "orderList00",
-      selectedOrderId,
-      "000000000000",
-      formData
-    );
+
     if (name == "approve") {
       formData["status"] = 2;
     } else if (name == "reject") {
@@ -311,7 +302,6 @@ function Orders() {
     axios
       .put(API_URL + `orders/updateOrderMaster/${selectedOrderId}`, formData)
       .then((res) => {
-        console.log("res", res.data);
         if (res) {
           setDataLoad(!dataLoad);
         }
@@ -322,14 +312,11 @@ function Orders() {
   };
 
   const handleAproveOrder = () => {
-    console.log(selectedOrderId, "ssssssssssssssssssss");
     const formData = orderDetails.find((el) => el.orderId === selectedOrderId);
-    console.log("formData   //", formData);
     // formData["orderStatus"] = 2;
     axios
       .put(`http://localhost:8081/approveOrder/${selectedOrderId}`, formData)
       .then((res) => {
-        console.log("res", res.data);
         if (res) {
           setDataLoad(!dataLoad);
         }
