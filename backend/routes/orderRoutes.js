@@ -12,5 +12,6 @@ router.put(
   "/updateOrderSycStatusWin/:orderId/:deviceName/:isSynced",
   orderController.updateOrderSycStatusWin
 );
+router.get("/getDesignCodeDetails", orderController.getDesignCodeDetails);
 
 module.exports = router;

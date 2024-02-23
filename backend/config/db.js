@@ -5,7 +5,7 @@ const config = {
   host: "grambooserver-do-user-15832365-0.c.db.ondigitalocean.com",
   user: "doadmin",
   password: "AVNS_kboMWdqEK1MbaCuUO9_",
-  database: "defaultdb",
+  database: "OrderManagement",
   port: 25060,
 };
 

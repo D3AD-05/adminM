@@ -1,5 +1,7 @@
 const { pool, poolConnect } = require("../config/db");
 
+// ---------  sync functions ------------------>
+
 const saveCustomer = (customerData) => {
   return new Promise((resolve, reject) => {
     const modifiedCustomers =
@@ -214,23 +216,6 @@ const saveOrderDetails = (modifiedOrderItemSummary) => {
   });
 };
 
-//   return new Promise((resolve, reject) => {
-//     const query = "INSERT INTO order_details (order_id, product_id, item_catagoryName,) VALUES ?";
-//     const values = orderDetailsData.map(item => [orderId, item.productId, item.itemCategoryName,]);
-
-//     pool.query(query, [values], (error, results) => {
-//       if (error) {
-//         console.error("Error saving order details:", error);
-//         reject({ error: "Error saving order details" });
-//       } else {
-//         resolve(results);
-//       }
-//     });
-//   });
-// };
-
-// Function to save data to order_Master table
-
 const saveOrderMaster = (orderMasterData) => {
   return new Promise((resolve, reject) => {
     const modifiedOrders =
@@ -330,88 +315,14 @@ const saveOrderMaster = (orderMasterData) => {
     );
   });
 };
+// ---------  sync functions end  ------------------>
 
-// const saveOrderItemSummary = (orderItemSummaryData) => {
-//   const modifiedOrderItemSummary =
-//     orderItemSummaryData.length > 0
-//       ? orderItemSummaryData
-//           .filter((item) => item.isSynced !== 1)
-//           .map(({ orderNo, ...rest }) => ({
-//             ...rest,
-//             order_mobReferenceNo: orderNo.toString(),
-//           }))
-//       : [];
+//                   - - -
 
-//   const shouldInsert = modifiedOrderItemSummary.length > 0;
-
-//   if (!shouldInsert) {
-//     console.log(
-//       "No order item summary with isSynced = 0 found. Skipping insertion."
-//     );
-//     return Promise.resolve(null);
-//   }
-
-//   const values = modifiedOrderItemSummary.map((item) => [
-//     item.orderNo,
-//     item.prodId,
-//     item.ItemCategoryName,
-//     item.itemId,
-//     item.designCId,
-//     item.Gwt,
-//     item.Stonewt,
-//     item.Diawt,
-//     item.NetWt,
-//     item.qty,
-//     item.appxWt,
-//     item.size,
-//     item.remark,
-//     item.isSynced,
-//     item.createdBy,
-//     item.createdDate,
-//     item.modifiedBy,
-//     item.modifiedDate,
-//     item.deviceName,
-//   ]);
-
-//   return new Promise((resolve, reject) => {
-//     pool.query(
-//       `INSERT INTO order_details (orderNo,
-//         prodId,
-//         ItemCategoryName,
-//         itemId,
-//         designCId,
-//         Gwt,
-//         Stonewt,
-//         Diawt,
-//         NetWt,
-//         qty,
-//         appxWt,
-//         size,
-//         remark,
-//         isSynced,
-//         createdBy,
-//         createdDate,
-//         modifiedBy,
-//         modifiedDate,
-//         deviceName,) VALUES ?`,
-//       [values],
-//       (error, results) => {
-//         if (error) {
-//           console.error("Error saving order item summary data:", error);
-//           reject({ error: "Error saving order item summary data" });
-//         } else {
-//           console.log("Order item summary synced");
-//           resolve({
-//             orderItemSummarySyncResponse: "Order item summary synced",
-//           }); // Resolve with the inserted ois_id
-//         }
-//       }
-//     );
-//   });
-// };
-
-// ----------------------------------------------------------------------------------------
+/*                 orderController                   */
 const orderController = {
+  // ---------    getAllOrders  ------------------>
+
   getAllOrders: (req, res) => {
     console.log("get all orders    ");
     const sql = `SELECT 
@@ -449,7 +360,7 @@ const orderController = {
     });
   },
 
-  // ////////////////////////////////////////
+  // ---------    getOrderDetails  ------------------> NOT USED
   getOrderDetails: (orderId) => {
     console.log("777");
     return new Promise((resolve, reject) => {
@@ -478,30 +389,11 @@ const orderController = {
     });
   },
 
+  // ---------    updateOrderMaster change order status  ------------------>
   updateOrderMaster: (req, res) => {
     const { orderId } = req.params;
-    console.log("UPDATE orderId", orderId);
-    const {
-      order_id,
-      order_date,
-      order_deliveryDate,
-      salesman_id,
-      customer_Id,
-      order_totalItems,
-      order_totalApxWt,
-      order_remarks,
-      order_selectPerson,
-      order_mobReferenceNo,
-      isSynced,
-      status,
-      deviceName,
-    } = req.body;
-
-    const createdBy = req.body?.createdBy;
-    const createdDate = req.body?.createdDate;
-    const modifiedBy = req.body?.modifiedBy;
-    const modifiedDate = req.body?.modifiedDate;
-
+    console.log("UPDATE orderId CHANGE STATUS", orderId);
+    const { status } = req.body;
     const sql = `
        UPDATE order_Master
       SET
@@ -530,14 +422,13 @@ const orderController = {
         });
       });
   },
-  // **************************************
-  // Function to save data to all tables in a single function
+
+  // ---------    Sync with phone data  ------------------>
   syncOrderData: async (req, res) => {
     console.log("sync", req.body);
     const customerData = req.body?.customers;
     const salesmanData = req.body?.salesman;
     const orderMasterData = req.body?.orderMaster;
-    // const orderSummaryData = req.body?.orderSummary;
     const orderDetailsData = req.body?.orderDetails;
 
     try {
@@ -545,19 +436,8 @@ const orderController = {
       const salesmanSyncResponse = await saveSalesman(salesmanData);
       const orderMasterSyncResponse = await saveOrderMaster(orderMasterData);
       const orderDetailsSyncResponse = await saveOrderDetails(orderDetailsData);
-      // const orderItemSummarySyncResponse = await saveOrderItemSummary(
-      //   orderSummaryData
-      // );
-
-      // const salesmanId = await saveSalesman(salesmanData);
-
-      // orderMasterData.customer_Id = customerId;
-      // orderDetailData.customer_Id = customerId
-      // orderMasterData.salesman_id = salesmanId;
-
-      // const orderId = await saveOrderMaster(orderMasterData);
       console.log(
-        "222222222",
+        "respnse >>>",
         customerSyncResponse,
         salesmanSyncResponse,
         orderMasterSyncResponse,
@@ -579,6 +459,7 @@ const orderController = {
     }
   },
 
+  // ---------    send approved data to win   ------------------>
   getApprovedOrderDetails: (req, res) => {
     console.log("get all orders");
     const sql = `
@@ -620,6 +501,8 @@ const orderController = {
       return res.status(200).json(data);
     });
   },
+
+  // ---------    sync status from win   ------------------>
   updateOrderSycStatusWin: (req, res) => {
     console.log(req.params, "--------------------");
     const { orderId, deviceName, isSynced } = req.params;
@@ -653,27 +536,10 @@ const orderController = {
         });
       });
   },
+
+  // ---------    get design code details   ------------------>
+  getDesignCodeDetails: (req, res) => {
+    console.log("getDesignCodeDetails");
+  },
 };
 module.exports = orderController;
-
-// CREATE TABLE "order_Master" (
-//   "" int NOT NULL AUTO_INCREMENT,
-//   "" varchar(45) DEFAULT NULL,
-//   "" varchar(45) DEFAULT NULL,
-//   "" varchar(45) DEFAULT NULL,
-//   "" varchar(45) DEFAULT NULL,
-//   "" varchar(50) DEFAULT NULL,
-//   "" varchar(45) DEFAULT NULL,
-//   "" varchar(1500) DEFAULT NULL,
-//   "" varchar(50) DEFAULT NULL,
-//   "" int DEFAULT NULL,
-//   "isSynced" int DEFAULT NULL,
-//   "createdBy" varchar(45) DEFAULT NULL,
-//   "createdDate" varchar(45) DEFAULT NULL,
-//   "modifiedBy" varchar(45) DEFAULT NULL,
-//   "modifiedDate" varchar(45) DEFAULT NULL,
-//   "" int DEFAULT '1',
-//   "deviceName" varchar(45) DEFAULT NULL,
-//   "windowsSynced" int DEFAULT NULL,
-//   PRIMARY KEY ("order_id")
-// );
