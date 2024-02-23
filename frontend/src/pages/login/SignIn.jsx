@@ -12,6 +12,7 @@ const SignIn = () => {
   const [isSignUpMode, setIsSignUpMode] = useState(false);
   const [verifiedData, setVerifiedData] = useState({});
   const [selectedUser, setSelectedUser] = useState(3);
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [enable, setEnable] = useState(false);
   const [formData, setFormData] = useState({
     userName: "",
@@ -22,6 +23,11 @@ const SignIn = () => {
     userStatus: 1,
   });
   const [formErrors, setFormErrors] = useState({});
+  const [phoneError, setPhoneError] = useState("");
+  const phoneSchema = z
+    .string()
+    .nonempty({ message: "Phone number is required" })
+    .length(10, { message: "Phone number must be 10 digits" });
 
   const signUpSchema = z.object({
     userName: z
@@ -65,9 +71,11 @@ const SignIn = () => {
         userType: parseInt(value),
       }));
       setSelectedUser(parseInt(value));
+    } else if (name === "phone") {
+      setPhoneNumber(value);
+      setPhoneError("");
     }
   };
-
   const handleOnBlur = (fieldName) => {
     const validationResult = signUpSchema
       .pick(fieldName)
@@ -113,11 +121,51 @@ const SignIn = () => {
       );
     }
   };
-  const handleOnLogin = () => {
-    if (verifiedData) {
-      navigate("/");
+  const handleOnLogin = (e) => {
+    e.preventDefault();
+    const validationResult = phoneSchema.safeParse(phoneNumber);
+    if (!validationResult.success) {
+      setPhoneError(validationResult.error.errors[0].message);
+      return;
+    } else {
+      setPhoneError("");
+    }
+
+    if (validationResult.success) {
+      // Construct the data to be sent in the POST request
+      const data = {
+        phoneNumber: phoneNumber,
+        userType: selectedUser,
+      };
+
+      // Make the POST request to check if the phone number exists
+      axios
+        .post(API_URL + "users/checkPhoneNumber", data)
+        .then((response) => {
+          if (response.data.length > 0) {
+            console.log(response.data, "------");
+            const userId = response.data[0].User_Id;
+            let extendTill = new Date();
+            extendTill.setDate(extendTill.getDate() + 1);
+            document.cookie = `loggedIn=${userId}; expires=${extendTill.toUTCString()}; path=/`;
+
+            navigate("/");
+            window.location.reload();
+          } else {
+            setPhoneError("no user Found,please sigin in");
+            setTimeout(() => {
+              setIsSignUpMode(true);
+            }, 1200);
+          }
+        })
+        .catch((error) => {
+          // Handle any errors that occur during the request
+          console.error("Error checking phone number:", error);
+          // You may want to display an error message to the user
+        });
     }
   };
+
   return (
     <div className={`container ${isSignUpMode ? "sign-up-mode" : ""}`}>
       <div className="forms-container">
@@ -150,21 +198,35 @@ const SignIn = () => {
               </select>
             </div>
 
-            {/* PhoneAuth component */}
+            <div className="input-field">
+              <i className="fas fa-phone"></i>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                placeholder="Enter 10 digit Mobile Number"
+                value={phoneNumber}
+                onChange={handleOnChange}
+              />
+            </div>
+            {phoneError && <span style={{ color: "red" }}>{phoneError}</span>}
+            {/* PhoneAuth component
             {!isSignUpMode && (
               <PhoneAuth
                 sendDataToParent={dataFromChild}
                 isSignUpMode={isSignUpMode}
               />
-            )}
+            )} */}
 
             {/* Submit button */}
-            <input
+            <button
               type="submit"
               value="Login"
-              className={!verifiedData ? "btn solid btn2" : "btn solid"}
-              onClick={handleOnLogin}
-            />
+              className={"btn solid"}
+              onClick={(e) => handleOnLogin(e)}
+            >
+              Login
+            </button>
           </form>
 
           {/* Sign up form */}
@@ -261,10 +323,11 @@ const SignIn = () => {
                 />
               </div>
             ) : (
-              <PhoneAuth
-                sendDataToParent={dataFromChild}
-                isSignUpMode={isSignUpMode}
-              />
+              ""
+              // <PhoneAuth
+              //   sendDataToParent={dataFromChild}
+              //   isSignUpMode={isSignUpMode}
+              // />
             )}
 
             {/* Submit button */}

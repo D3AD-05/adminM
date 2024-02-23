@@ -6,7 +6,7 @@ const config = {
   user: "doadmin",
   password: "AVNS_kboMWdqEK1MbaCuUO9_",
   database: "defaultdb",
-  port: 25060,
+  port: 8081,
 };
 
 const pool = mysql.createPool(config);
