@@ -15,6 +15,7 @@ import Footer from "./components/footer/Footer";
 import Notification from "./pages/notification/notification";
 import ApprovalWaiting from "./pages/approvalWaiting/ApprovalWaiting";
 import OrderDetailsView from "./pages/oderDetails/orderDetailsView";
+import OrderDetails from "./pages/orders/ordersDetails";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -83,7 +84,7 @@ const AuthenticatedLayout = ({ isLoggedIn }) => {
             <Route path="/users" element={<Users />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/notifications" element={<Notification />} />
-            <Route path="/orderDetailsView" element={<OrderDetailsView />} />
+            <Route path="/order" element={<OrderDetails />} />
           </Routes>
         </div>
       </div>

@@ -1,4 +1,8 @@
-import MUIDataTable from "mui-datatables";
+import MUIDataTable, {
+  TableBody,
+  TableHead,
+  TableToolbar,
+} from "mui-datatables";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Button from "@mui/material/Button";
@@ -11,7 +15,7 @@ import BlockIcon from "@mui/icons-material/Block";
 import CloseIcon from "@mui/icons-material/Close";
 import { API_URL } from "../../utlity/appConstants";
 import Datatable from "../datatable/datatable";
-import { TextField, Tooltip } from "@mui/material";
+import { Collapse, TableCell, TextField, Tooltip } from "@mui/material";
 import Done from "@mui/icons-material/Done";
 import Close from "@mui/icons-material/Close";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -19,6 +23,11 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { Typography } from "@mui/material";
 import "./orders.scss";
 import Slider from "react-slick";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import { TableContainer } from "@mui/material";
+import { TableRow } from "@mui/material";
+import { Table } from "@mui/material";
+import Paper from "@material-ui/core/Paper";
 /*-----------========================-------------------------*/
 
 function Orders() {
@@ -220,6 +229,9 @@ function Orders() {
       },
     },
   ];
+  function createData(name, calories, fat, carbs, protein) {
+    return { name, calories, fat, carbs, protein };
+  }
   const settings = {
     dots: true,
     infinite: true,
@@ -227,10 +239,43 @@ function Orders() {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
+  const rows = [
+    createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
+    createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
+    createData("Eclair", 262, 16.0, 24, 6.0),
+    createData("Cupcake", 305, 3.7, 67, 4.3),
+    createData("Gingerbread", 356, 16.0, 49, 3.9),
+  ];
 
   const options = {
-    selectableRows: "none",
-    customToolbar: () => {},
+    selectableRows: false,
+    expandableRows: true,
+    renderExpandableRow: (rowData, rowMeta) => {
+      console.log(rowData, rowMeta);
+      return (
+        <>
+          <TableRow>
+            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+              <Collapse
+                in={true} // Set to true to expand by default
+                timeout="auto"
+                unmountOnExit
+              >
+                <Box margin={1}>
+                  {/* Your custom content goes here */}
+                  {/* Replace this with your ImageSlider component */}
+                  <Typography variant="h6" gutterBottom component="div">
+                    Image Slider
+                  </Typography>
+                  {/* Add your ImageSlider component here */}
+                  {/* <ImageSlider images={rows.map((row) => row.image)} /> */}
+                </Box>
+              </Collapse>
+            </TableCell>
+          </TableRow>
+        </>
+      );
+    },
   };
 
   const togglePopup = (value) => {
@@ -338,14 +383,7 @@ function Orders() {
     <div className="orderContainer">
       <div className="dataTable">
         <button onClick={fetchData}>adhsfhuisd</button>
-        {/* <Datatable
-          title="orders"
-          column={paymentModeColumns}
-          // createNewDatatTable={() => setModalOpen(true)}
-          data={renderTableData()}
-          // handleFilter={handleFilter}
-          totalCount={10}
-        /> */}
+
         <MUIDataTable
           title={"Order List"}
           columns={columns}
@@ -432,14 +470,18 @@ function Orders() {
       {imgPopup && (
         <div className="popup-container" onClick={() => togglePopup()}>
           <div className="popup-content">
-            <img
-              src={
-                img
-                  ? img
-                  : "https://cdn.vectorstock.com/i/1000x1000/30/97/flat-business-man-user-profile-avatar-icon-vector-4333097.webp"
-              }
-              alt="Popup Image"
-            />
+            <TransformWrapper>
+              <TransformComponent>
+                <img
+                  src={
+                    img
+                      ? img
+                      : "https://cdn.vectorstock.com/i/1000x1000/30/97/flat-business-man-user-profile-avatar-icon-vector-4333097.webp"
+                  }
+                  alt="Popup Image"
+                />
+              </TransformComponent>
+            </TransformWrapper>
           </div>
         </div>
       )}

@@ -1,3 +1,6 @@
+.orderContainer{
+  
+}
 .MuiTableCell-root {
   //   .css-1ex1afd-MuiTableCell-root {
   text-align: center !important;
@@ -100,8 +103,10 @@
 }
 
 .order-image {
-  width: 100%;
-  height: auto;
+  width: 50%;
+  height: 50%;
   margin-top: 16px;
+  margin-left: 800px;
+
   border-radius: 8px;
 }

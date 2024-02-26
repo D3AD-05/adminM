@@ -7,3 +7,4 @@ export { default as Catagories } from "./catagories/Catagories";
 export { default as FormInput } from "./formInput/FormInput";
 export { default as ChartBox } from "./chartBox/ChartBox";
 export { default as TopBox } from "./topBox/TopBox";
+export { default as ImageSlider } from "./iimageSlider/ImageSlider";
