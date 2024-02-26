@@ -1,33 +1,30 @@
 @import "./variables.scss";
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  a {
-    text-decoration: none;
-    color: inherit;
-  }
-  .main {
-    font-family: "Inter", sans-serif;
-    background-color: $main-bg;
-    color: $main-color;
-  }
-  .homeContainer{
-    display: flex;
-  }
-  .menuContainer{
-    width: 160px;
-    height: 100vh;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+.main {
+  font-family: "Inter", sans-serif;
+  background-color: $main-bg;
+  color: $main-color;
+}
+.homeContainer {
+  display: flex;
+}
+.menuContainer {
+  width: 160px;
+  height: 100vh;
   padding: 5px 20px;
   border-right: 2px solid $soft-bg;
-
-  }
-  .contentContainer {
-    padding: 5px 20px;
-    width: 100%;
-  }
-
- 
+}
+.contentContainer {
+  padding: 5px 20px;
+  width: calc(100% - 160px);
+}

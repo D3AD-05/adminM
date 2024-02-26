@@ -474,14 +474,13 @@ WHERE
       const customerSyncResponse = await saveCustomer(customerData);
       const salesmanSyncResponse = await saveSalesman(salesmanData);
       const orderMasterSyncResponse = await saveOrderMaster(orderMasterData);
-      try {
-        const orderDetailsSyncResponse = await saveOrderDetails(
-          orderDetailsData
-        );
-      } catch (error) {
-        console.log("errrorrr error", error);
-        throw error;
-      }
+      // try {
+      const orderDetailsSyncResponse = await saveOrderDetails(orderDetailsData);
+      // orderDetailsData
+      // } catch (error) {
+      //   console.log("errrorrr error", error);
+      //   throw error;
+      // }
       console.log(
         "respnse >>>",
         customerSyncResponse,

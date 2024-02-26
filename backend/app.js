@@ -7,7 +7,7 @@ const userRoutes = require("./routes/userRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const itemRoutes = require("./routes/itemRouter");
 const app = express();
-const PORT = process.env.PORT || 8081;
+const PORT = process.env.PORT || 25060;
 
 app.use(cors());
 // app.use(express.json());

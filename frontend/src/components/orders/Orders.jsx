@@ -1,8 +1,3 @@
-import MUIDataTable, {
-  TableBody,
-  TableHead,
-  TableToolbar,
-} from "mui-datatables";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Button from "@mui/material/Button";
@@ -15,7 +10,7 @@ import BlockIcon from "@mui/icons-material/Block";
 import CloseIcon from "@mui/icons-material/Close";
 import { API_URL } from "../../utlity/appConstants";
 import Datatable from "../datatable/datatable";
-import { Collapse, TableCell, TextField, Tooltip } from "@mui/material";
+import { Collapse, TextField, Tooltip } from "@mui/material";
 import Done from "@mui/icons-material/Done";
 import Close from "@mui/icons-material/Close";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -24,10 +19,15 @@ import { Typography } from "@mui/material";
 import "./orders.scss";
 import Slider from "react-slick";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-import { TableContainer } from "@mui/material";
-import { TableRow } from "@mui/material";
-import { Table } from "@mui/material";
+import MUIDataTable from "mui-datatables";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
+import ImageSlider from "../iimageSlider/ImageSlider";
 /*-----------========================-------------------------*/
 
 function Orders() {
@@ -254,25 +254,23 @@ function Orders() {
       console.log(rowData, rowMeta);
       return (
         <>
-          <TableRow>
-            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-              <Collapse
-                in={true} // Set to true to expand by default
-                timeout="auto"
-                unmountOnExit
-              >
-                <Box margin={1}>
-                  {/* Your custom content goes here */}
-                  {/* Replace this with your ImageSlider component */}
-                  <Typography variant="h6" gutterBottom component="div">
-                    Image Slider
-                  </Typography>
-                  {/* Add your ImageSlider component here */}
-                  {/* <ImageSlider images={rows.map((row) => row.image)} /> */}
-                </Box>
-              </Collapse>
-            </TableCell>
-          </TableRow>
+          <tr>
+            <td colSpan={15}>
+              <TableContainer component={Paper}>
+                <Table style={{ minWidth: "650" }} aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>order no</TableCell>
+                      <TableCell align="right">111</TableCell>
+                      <TableCell align="right">222</TableCell>
+                      <TableCell align="right">333</TableCell>
+                      <TableCell align="right">444</TableCell>
+                    </TableRow>
+                  </TableHead>
+                </Table>
+              </TableContainer>
+            </td>
+          </tr>
         </>
       );
     },
@@ -307,7 +305,7 @@ function Orders() {
               deliveryDate: el.order_deliveryDate,
               orderStatus: el.status,
               contactPerson: el.customer_contactPerson,
-              aproximateWt: el.order_totalApxWt,
+              aproximateWt: parseFloat(el.order_totalApxWt).toFixed(3),
               customerimg: el.firebase_imgUrl,
               contactPhoneNo: el.customer_phoneNo,
             }))

@@ -122,7 +122,7 @@ const OrderDetails = (props) => {
                       <TableCell align="right"></TableCell>
                     </TableRow>
                   </TableHead>
-                  <TableBody>
+                  {/* <TableBody>
                     {rows.map((row) => (
                       <TableRow key={row.name}>
                         <TableCell component="th" scope="row">
@@ -135,7 +135,7 @@ const OrderDetails = (props) => {
                         <TableCell align="right">{row.protein}</TableCell>
                       </TableRow>
                     ))}
-                  </TableBody>
+                  </TableBody> */}
                 </Table>
               </TableContainer>
             </td>

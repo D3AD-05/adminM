@@ -69,7 +69,7 @@ const SignIn = () => {
 
   const handleOnChange = (event) => {
     const { name, value } = event.target;
-    // console.log(name);
+    console.log(name);
     setFormData({ ...formData, [name]: value });
 
     if (name === "userType") {
@@ -109,29 +109,20 @@ const SignIn = () => {
     e.preventDefault();
     console.log(formData);
     const validationResult = signUpSchema.safeParse(formData);
+    console.log(!userExist);
+    if (validationResult.success && userExist) {
+      axios
+        .post(API_URL + "users/createUser", formData)
+        .then((res) => {
+          console.log(res);
+          if (res.data.insertId > 0) {
+            const userId = res.data.insertId;
+            document.cookie = "loggedIn=" + userId;
 
-    if (validationResult.success && !userExist && isRecaptchaVerified) {
-      confirmationResult
-        .confirm(verificationCode)
-        .then((userCredential) => {
-          console.log("Verification successful:", userCredential);
-          axios
-            .post(API_URL + "users/createUser", formData)
-            .then((res) => {
-              // console.log(res);
-              if (res.data.insertId > 0) {
-                const userId = res.data.insertId;
-                document.cookie = "loggedIn=" + userId;
-
-                navigate("/approvalWaiting", { state: { userId: userId } });
-              }
-            })
-            .catch((err) => alert(err));
+            navigate("/approvalWaiting", { state: { userId: userId } });
+          }
         })
-        .catch((error) => {
-          console.error("Error verifying code:", error);
-          setOtpError(true);
-        });
+        .catch((err) => alert(err));
     } else {
       setFormErrors(
         validationResult.error.errors.reduce((acc, curr) => {
@@ -164,7 +155,7 @@ const SignIn = () => {
         .post(API_URL + "users/checkPhoneNumber", data)
         .then((response) => {
           if (response.data.length > 0) {
-            // console.log(response.data, "------");
+            console.log(response.data, "------");
             const userId = response.data[0]?.User_Id;
             let extendTill = new Date();
             extendTill.setDate(extendTill.getDate() + 1);
@@ -173,7 +164,7 @@ const SignIn = () => {
             navigate("/");
             window.location.reload();
           } else {
-            setPhoneError2("no user Found/ Invalid credential");
+            setPhoneError2("Invalid credential");
             // setTimeout(() => {
             //   setIsSignUpMode(true);
             // }, 1200);
@@ -213,18 +204,20 @@ const SignIn = () => {
           }
         });
       console.log("userExist", userExist);
-      if (userExist) {
-        const recaptcha = new RecaptchaVerifier(auth, "recaptcha", {});
-        const confirmation = await signInWithPhoneNumber(
-          auth,
-          mobNumber,
-          recaptcha
-        );
+      // if (userExist) {
+      const recaptcha = new RecaptchaVerifier(auth, "recaptcha", {
+        size: "invisible",
+      });
+      const confirmation = await signInWithPhoneNumber(
+        auth,
+        mobNumber,
+        recaptcha
+      );
 
-        setConfirmationResult(confirmation);
-        setIsRecaptchaVerified(true);
-        toast.success("recaptcha succesfull!!");
-      }
+      setConfirmationResult(confirmation);
+      setIsRecaptchaVerified(true);
+      toast.success("recaptcha succesfull!!");
+      // }
     } catch (error) {
       console.error("Error sending code:", error);
     }
@@ -233,14 +226,10 @@ const SignIn = () => {
   const handleVerifyCode = async () => {
     try {
       const data = await confirmationResult.confirm(verificationCode);
-      toast.promise(confirmationResult.confirm(verificationCode), {
-        loading: "Verifying...",
-        success: <b>Verified succesfully! click login in</b>,
-        error: <b>Could not save.</b>,
-      });
-      // console.log(data);
+
+      toast.success(<b>Verified successfully! Click login.</b>);
     } catch (error) {
-      console.error("Error sending code:", error);
+      console.error("Error verifying code:", error);
       setOtpError(true);
     }
   };
