@@ -584,26 +584,58 @@ WHERE
 
   // ---------    get design code details   ------------------>
   getDesignCodeDetails: (req, res) => {
-    const sql = `SELECT  
-    DCI.EntryId,
-    DCI.DesignCodeId,
-    DCI.PicId,
-    DCI.ImagePriority,
-    DCI.url,
-    DCI.Branch_id,
-    DCI.*
-    FROM Design_Code_Generator DCG
-    LEFT JOIN Design_Code_Images DCI ON DCG.DesignCodeId = DCI.DesignCodeId;
-    
+    const generatorSql = `
+      SELECT  
+        *
+      FROM Design_Code_Generator
     `;
 
-    pool.query(sql, (err, data) => {
+    pool.query(generatorSql, (err, generatorData) => {
       if (err) {
-        console.error("Error retrieving data:", err);
+        console.error("Error retrieving generator data:", err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
-      return res.status(200).json(data);
+
+      const responseData = [];
+
+      // Loop through each item in the generator data
+      generatorData.forEach((generatorItem) => {
+        const imagesSql = `
+          SELECT
+          DCI.EntryId,
+          DCI.DesignCodeId,
+          DCI.PicId,
+          DCI.ImagePriority,
+          DCI.url,
+          DCI.Branch_id
+          FROM Design_Code_Images DCI
+          WHERE DesignCodeId = ${generatorItem.DesignCodeId}
+        `;
+
+        // Fetch images data for the current generator item
+        pool.query(imagesSql, (err, imagesData) => {
+          if (err) {
+            console.error("Error retrieving images data:", err);
+            return res.status(500).json({ error: "Internal Server Error" });
+          }
+
+          // Combine generator and images data
+          const combinedData = {
+            ...generatorItem,
+            Images: imagesData,
+          };
+
+          // Push combined data to response array
+          responseData.push(combinedData);
+
+          // If all generator items have been processed, send response
+          if (responseData.length === generatorData.length) {
+            return res.status(200).json(responseData);
+          }
+        });
+      });
     });
   },
 };
+
 module.exports = orderController;
