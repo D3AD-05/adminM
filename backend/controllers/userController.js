@@ -1,11 +1,12 @@
 // controllers/userController.js
 const { pool, poolConnect } = require("../config/db");
+const { getAllUsersMdl } = require("../model/userModel");
 
 const UserController = {
   /*  -------------------  getAllUsers ----------------------------- */
 
   getAllUsers: (req, res) => {
-    const sql = "SELECT * FROM userDetails ORDER BY User_Id DESC";
+    const sql = getAllUsersMdl();
     pool.query(sql, (err, data) => {
       if (err) {
         console.error("Error retrieving data:", err);
@@ -17,7 +18,6 @@ const UserController = {
   /*  -------------------  createUser ----------------------------- */
 
   createUser: (req, res) => {
-    console.log(req.body.userType);
     const {
       userName,
       userPhoneNo,

@@ -584,7 +584,26 @@ WHERE
 
   // ---------    get design code details   ------------------>
   getDesignCodeDetails: (req, res) => {
-    console.log("getDesignCodeDetails");
+    const sql = `SELECT  
+    DCI.EntryId,
+    DCI.DesignCodeId,
+    DCI.PicId,
+    DCI.ImagePriority,
+    DCI.url,
+    DCI.Branch_id,
+    DCI.*
+    FROM Design_Code_Generator DCG
+    LEFT JOIN Design_Code_Images DCI ON DCG.DesignCodeId = DCI.DesignCodeId;
+    
+    `;
+
+    pool.query(sql, (err, data) => {
+      if (err) {
+        console.error("Error retrieving data:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+      return res.status(200).json(data);
+    });
   },
 };
 module.exports = orderController;

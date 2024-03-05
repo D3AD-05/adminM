@@ -164,7 +164,7 @@ const SignIn = () => {
             navigate("/");
             window.location.reload();
           } else {
-            setPhoneError2("Invalid credential");
+            setPhoneError2("Invalid User");
             // setTimeout(() => {
             //   setIsSignUpMode(true);
             // }, 1200);
